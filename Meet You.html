@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>因为遇见你 · 协作策划站</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#b98c5e;--gold-l:rgba(185,140,94,.4);--gold-p:rgba(185,140,94,.1);
+  --t1:#1a1612;--t2:#6b5f52;--t3:#a8998a;
+  --bg1:#fff;--bg2:#faf8f5;--bg3:#f2ede7;
+  --bdr:rgba(185,140,94,.15);--bdrm:rgba(185,140,94,.28);
+  --r-sm:6px;--r-md:10px;--r-lg:16px;
+  --sh:0 2px 12px rgba(90,60,20,.08),0 0 0 .5px rgba(185,140,94,.12);
+  --shf:0 8px 28px rgba(90,60,20,.14),0 0 0 .5px rgba(185,140,94,.2);
+  --ff-d:'Noto Serif SC',serif;--ff-b:'Noto Sans SC','PingFang SC',sans-serif;
+}
+html,body{font-family:var(--ff-b);height:100vh;overflow:hidden;color:var(--t1);background:var(--bg2)}
+button{cursor:pointer;font-family:var(--ff-b)}
+[contenteditable]{outline:none;user-select:text;cursor:text}
+[contenteditable]:focus{box-shadow:inset 0 0 0 1.5px rgba(185,140,94,.4);border-radius:3px}
+
+/* ════ SETUP ════ */
+#setup{position:fixed;inset:0;z-index:9999;background:var(--bg2);display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:24px}
+.sbox{width:500px;max-width:100%;background:var(--bg1);border-radius:var(--r-lg);border:.5px solid var(--bdrm);box-shadow:var(--shf);padding:32px 28px}
+.slogo{font-family:var(--ff-d);font-size:20px;margin-bottom:4px}.slogo span{color:var(--gold)}
+.ssub{font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:20px}
+.sstep{display:flex;gap:10px;margin-bottom:14px}
+.snum{width:22px;height:22px;border-radius:50%;background:var(--gold);color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.stitle{font-size:13px;font-weight:500;margin-bottom:2px}
+.sdesc{font-size:11px;color:var(--t2);line-height:1.6}
+.sdesc a{color:var(--gold);text-decoration:none}
+.sdiv{height:.5px;background:var(--bdr);margin:16px 0}
+.slabel{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:5px}
+.sinp{width:100%;padding:8px 11px;border-radius:var(--r-md);border:.5px solid var(--bdrm);background:var(--bg2);font-size:13px;color:var(--t1);margin-bottom:7px;font-family:var(--ff-b)}
+.sinp:focus{outline:none;border-color:var(--gold)}
+.spaste{width:100%;padding:9px 11px;border-radius:var(--r-md);border:.5px solid var(--bdrm);background:var(--bg2);font-size:11px;color:var(--t2);font-family:monospace;resize:vertical;min-height:90px;margin-bottom:7px}
+.spaste:focus{outline:none;border-color:var(--gold)}
+.sbtn{width:100%;padding:10px;border-radius:var(--r-md);border:none;background:var(--gold);color:#fff;font-size:13px;font-weight:500;margin-top:4px}
+.sbtn:hover{background:#a57850}
+.serr{font-size:11px;color:#c0392b;margin-top:6px;padding:7px 10px;background:#fdf2f2;border-radius:var(--r-sm);display:none}
+.sfree{display:inline-flex;align-items:center;gap:4px;background:#e8f5e9;color:#2e7d32;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500;margin-bottom:14px}
+
+/* ════ APP ════ */
+#app{display:none;flex-direction:column;height:100vh}
+#app.ready{display:flex}
+
+/* ════ TOPBAR ════ */
+#topbar{height:50px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--bg1);border-bottom:.5px solid var(--bdr);z-index:200}
+.logo{font-family:var(--ff-d);font-size:14px;letter-spacing:.05em;display:flex;align-items:center;gap:7px}
+.logo-dot{width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.logo-sub{font-size:10px;color:var(--gold);font-family:var(--ff-b);letter-spacing:.1em}
+.sst{font-size:11px;color:var(--t3);display:flex;align-items:center;gap:4px}
+.ssdot{width:5px;height:5px;border-radius:50%;background:#4caf50}
+.ssdot.saving{background:var(--gold);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.cstack{display:flex;align-items:center;margin-right:4px}
+.cav{width:26px;height:26px;border-radius:50%;border:2px solid var(--bg1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;margin-left:-6px;position:relative}
+.cav:first-child{margin-left:0}
+.cavtip{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);background:var(--t1);color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:10}
+.cav:hover .cavtip{opacity:1}
+.tbtn{padding:5px 12px;border-radius:var(--r-md);border:.5px solid var(--bdrm);background:transparent;font-size:12px;color:var(--t1);display:inline-flex;align-items:center;gap:4px;transition:background .12s}
+.tbtn:hover{background:var(--bg2)}
+.tbtn.gold{background:var(--gold);color:#fff;border-color:var(--gold);font-weight:500}
+.tbtn.gold:hover{background:#a57850}
+
+/* ════ WORKSPACE ════ */
+#ws{display:flex;flex:1;overflow:hidden}
+
+/* ════ LEFT SIDEBAR ════ */
+#sb{width:200px;flex-shrink:0;background:var(--bg1);border-right:.5px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden}
+.sb-top{flex:1;overflow-y:auto;padding:12px 8px}
+.sb-top::-webkit-scrollbar{width:3px}
+.sb-top::-webkit-scrollbar-thumb{background:var(--bdrm);border-radius:3px}
+.sblabel{font-size:9px;font-weight:600;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;padding:0 4px;margin-bottom:5px}
+
+/* PAGE TABS */
+.page-tabs{border-bottom:.5px solid var(--bdr);padding:8px 8px 0}
+.page-tab{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:var(--r-sm) var(--r-sm) 0 0;font-size:11px;color:var(--t2);cursor:pointer;margin-bottom:0;transition:all .12s;border:.5px solid transparent;border-bottom:none;position:relative}
+.page-tab:hover{background:var(--bg2);color:var(--t1)}
+.page-tab.active{background:var(--bg1);color:var(--t1);border-color:var(--bdr);font-weight:500;margin-bottom:-1px;z-index:1}
+.page-tab .ptdot{width:7px;height:7px;border-radius:50%;background:var(--gold-l);flex-shrink:0;border:.5px solid var(--bdrm)}
+.page-tab.active .ptdot{background:var(--gold)}
+.page-tab .ptnum{font-size:9px;color:var(--t3);margin-left:auto;flex-shrink:0}
+
+/* blocks */
+.bchip{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:var(--r-md);border:.5px solid var(--bdr);background:var(--bg1);font-size:12px;color:var(--t2);cursor:grab;margin-bottom:4px;transition:all .12s}
+.bchip:hover{background:var(--gold-p);color:var(--t1);border-color:var(--gold-l);transform:translateX(2px)}
+.bchip i{font-size:14px;color:var(--gold);flex-shrink:0}
+.bchip small{font-size:10px;color:var(--t3);display:block;margin-top:1px}
+
+/* presence */
+.pitem{display:flex;align-items:center;gap:7px;padding:5px 3px;border-bottom:.5px solid var(--bdr)}
+.pitem:last-child{border-bottom:none}
+.pav{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0}
+.ponline{color:#4caf50;font-size:9px}
+
+/* ════ CANVAS ════ */
+#cwrap{flex:1;overflow:auto;background:var(--bg3);background-image:radial-gradient(circle,rgba(185,140,94,.07) 1px,transparent 1px);background-size:22px 22px;position:relative}
+#cwrap::-webkit-scrollbar{width:5px;height:5px}
+#cwrap::-webkit-scrollbar-thumb{background:var(--bdrm);border-radius:3px}
+.page-canvas{position:relative;width:1200px;min-height:860px;margin:24px;transform-origin:0 0;display:none}
+.page-canvas.active-page{display:block}
+.page-canvas.drag-over{outline:2px dashed var(--gold);outline-offset:4px;border-radius:var(--r-md)}
+
+/* page header strip */
+.page-header-strip{position:absolute;top:0;left:0;right:0;height:36px;display:flex;align-items:center;padding:0 16px;background:var(--bg1);border-radius:var(--r-lg) var(--r-lg) 0 0;border:.5px solid var(--bdrm);pointer-events:none;z-index:1}
+.php-title{font-family:var(--ff-d);font-size:13px;font-weight:400;color:var(--t2);letter-spacing:.08em}
+.php-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin-right:8px}
+
+/* remote cursors */
+.rcursor{position:absolute;pointer-events:none;z-index:80;transition:left .25s,top .25s}
+.rcursor-a{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:10px solid var(--cc);transform:rotate(-25deg) translate(-2px,2px)}
+.rcursor-t{position:absolute;top:12px;left:4px;padding:2px 6px;border-radius:3px;background:var(--cc);color:#fff;font-size:9px;font-weight:500;white-space:nowrap}
+
+/* ════ CARDS ════ */
+.card{position:absolute;background:var(--bg1);border-radius:var(--r-lg);border:.5px solid var(--bdrm);box-shadow:var(--sh);min-width:160px;transition:box-shadow .15s}
+.card:hover{box-shadow:var(--shf)}
+.card.selected{border-color:var(--gold);box-shadow:var(--shf),0 0 0 2px rgba(185,140,94,.15)}
+.chdr{display:flex;align-items:center;justify-content:space-between;padding:8px 11px 7px;border-bottom:.5px solid var(--bdr);border-radius:var(--r-lg) var(--r-lg) 0 0;background:var(--bg2);cursor:grab}
+.chdr:active{cursor:grabbing}
+.ctag{font-size:9px;font-weight:600;letter-spacing:.08em;color:var(--gold);text-transform:uppercase}
+.ctools{display:flex;gap:2px}
+.ctool{width:22px;height:22px;border-radius:4px;border:none;background:transparent;font-size:12px;color:var(--t3);display:flex;align-items:center;justify-content:center;transition:background .1s,color .1s}
+.ctool:hover{background:var(--bg1);color:var(--t1)}
+.ctool.del:hover{color:#c0392b}
+.cbody{padding:13px}
+.rh{position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;cursor:se-resize;display:flex;align-items:center;justify-content:center;color:var(--bdrm);background:var(--bg2);border-radius:0 0 var(--r-lg) 0;border-top:.5px solid var(--bdr);border-left:.5px solid var(--bdr)}
+.rh:hover{color:var(--gold)}
+.sh{position:absolute;width:7px;height:7px;background:#fff;border:1.5px solid var(--gold);border-radius:2px;z-index:5;display:none}
+.card.selected .sh{display:block}
+.sh-tl{top:-3px;left:-3px}.sh-tr{top:-3px;right:-3px}.sh-bl{bottom:-3px;left:-3px}.sh-br{bottom:-3px;right:-3px}
+
+/* card content */
+.hero-t{font-family:var(--ff-d);font-size:28px;font-weight:300;line-height:1.25;letter-spacing:.04em}
+.gline{width:30px;height:1.5px;background:var(--gold);border-radius:1px;margin:10px 0}
+.hero-s{font-size:13px;color:var(--t2);line-height:1.8}
+.hero-d{font-size:11px;color:var(--gold);letter-spacing:.1em;margin-top:9px;font-family:var(--ff-d)}
+.part-t{font-family:var(--ff-d);font-size:22px;font-weight:300;letter-spacing:.06em;color:var(--t1)}
+.part-en{font-size:10px;letter-spacing:.2em;color:var(--gold);margin-bottom:8px}
+.part-desc{font-size:13px;color:var(--t2);line-height:1.8;margin-top:10px}
+.tl-item{display:flex;gap:12px;margin-bottom:14px}
+.tl-item:last-child{margin-bottom:0}
+.tll{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.tldot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.tlline{width:1px;flex:1;background:var(--gold-l);min-height:24px}
+.tlch{font-size:9px;color:var(--gold);letter-spacing:.1em;margin-bottom:2px}
+.tln{font-family:var(--ff-d);font-size:14px;font-weight:400;margin-bottom:3px}
+.tld{font-size:12px;color:var(--t2);line-height:1.7}
+.inv-body{text-align:center;padding:16px 14px}
+.inv-en{font-size:9px;letter-spacing:.2em;color:var(--t3);margin-bottom:4px}
+.inv-t{font-family:var(--ff-d);font-size:22px;font-weight:300;letter-spacing:.08em}
+.inv-hr{width:40px;height:.5px;background:var(--gold);margin:10px auto}
+.inv-info{font-size:12px;color:var(--t2);line-height:2.2}
+.inv-qr{width:60px;height:60px;margin:11px auto 0;background:var(--bg2);border-radius:var(--r-md);border:.5px solid var(--bdrm);display:flex;align-items:center;justify-content:center}
+.inv-qr i{font-size:26px;color:var(--t3)}
+.grow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--bdr)}
+.grow:last-child{border-bottom:none;padding-bottom:0}
+.gnum{font-family:var(--ff-d);font-size:17px;font-weight:300;color:var(--gold);width:24px;flex-shrink:0}
+.ginfo p{font-size:12px;font-weight:500}
+.ginfo span{font-size:10px;color:var(--t3);display:block;margin-top:1px}
+.gbadge{margin-left:auto;flex-shrink:0;font-size:10px;color:var(--gold);background:var(--gold-p);border-radius:20px;padding:2px 8px;font-weight:500}
+.txt-b{font-size:13px;color:var(--t2);line-height:1.8}
+
+/* photo card */
+.pa{width:100%;min-height:150px;background:var(--bg2);border-radius:0 0 var(--r-lg) var(--r-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--t3);font-size:12px;cursor:pointer;transition:background .15s;position:relative;overflow:hidden}
+.pa:hover{background:var(--gold-p)}
+.pa i{font-size:22px;color:var(--gold-l)}
+.pa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pa-ov{position:absolute;inset:0;background:rgba(185,140,94,.7);display:none;align-items:center;justify-content:center;color:#fff;font-size:12px;gap:5px}
+.pa:hover .pa-ov{display:flex}
+.spin{width:20px;height:20px;border:2px solid var(--gold-l);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ════ PHOTO GALLERY PAGE ════ */
+.photo-gallery{padding:16px}
+.pg-title{font-family:var(--ff-d);font-size:18px;font-weight:300;color:var(--t1);margin-bottom:4px}
+.pg-sub{font-size:12px;color:var(--t3);margin-bottom:16px}
+.pg-upload-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r-md);border:.5px solid var(--bdrm);background:var(--gold);color:#fff;font-size:13px;font-weight:500;cursor:pointer;transition:background .12s;margin-bottom:20px}
+.pg-upload-btn:hover{background:#a57850}
+.pg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.pg-photo{border-radius:var(--r-md);overflow:hidden;background:var(--bg2);border:.5px solid var(--bdrm);position:relative;aspect-ratio:4/3}
+.pg-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.pg-photo-info{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.6));padding:8px;opacity:0;transition:opacity .2s}
+.pg-photo:hover .pg-photo-info{opacity:1}
+.pg-photo-name{font-size:11px;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pg-dl-btn{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.9);color:var(--t1);font-size:11px;font-weight:500;cursor:pointer;border:none;text-decoration:none}
+.pg-empty{text-align:center;padding:60px 20px;color:var(--t3)}
+.pg-empty i{font-size:40px;color:var(--gold-l);display:block;margin-bottom:12px}
+
+/* ════ RIGHT PANEL ════ */
+#rp{width:200px;flex-shrink:0;background:var(--bg1);border-left:.5px solid var(--bdr);overflow-y:auto;padding:12px 11px;display:flex;flex-direction:column;gap:12px}
+#rp::-webkit-scrollbar{width:3px}
+#rp::-webkit-scrollbar-thumb{background:var(--bdrm);border-radius:3px}
+.rplabel{font-size:9px;font-weight:600;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:7px}
+.rpdiv{height:.5px;background:var(--bdr);margin:0 -11px}
+.rfi{font-size:11px;color:var(--t2);margin-bottom:3px}
+.rpi{width:100%;padding:5px 8px;border-radius:var(--r-sm);border:.5px solid var(--bdrm);background:var(--bg2);font-size:12px;color:var(--t1);font-family:var(--ff-b)}
+.rpi:focus{outline:none;border-color:var(--gold)}
+.rpsplit{display:flex;gap:4px}
+.rpsplit .rpi{flex:1;min-width:0}
+.csw{width:19px;height:19px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s,border-color .12s}
+.csw:hover{transform:scale(1.15)}
+.csw.active{border-color:var(--t1)}
+.rpbtn{width:100%;padding:6px;border-radius:var(--r-md);border:.5px solid var(--bdrm);background:transparent;font-size:12px;color:var(--t1);display:flex;align-items:center;justify-content:center;gap:5px;transition:background .12s;margin-bottom:5px}
+.rpbtn:hover{background:var(--bg2)}
+.rpbtn.gold{background:var(--gold);color:#fff;border-color:var(--gold);font-weight:500}
+.rpbtn.gold:hover{background:#a57850}
+
+/* ════ ZOOM ════ */
+#zbar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:4px;background:var(--bg1);border:.5px solid var(--bdrm);border-radius:22px;padding:4px 10px;box-shadow:var(--sh);z-index:100}
+#zlabel{font-size:11px;color:var(--t2);min-width:34px;text-align:center}
+.zbtn{width:22px;height:22px;border-radius:50%;border:none;background:transparent;font-size:14px;color:var(--t2);display:flex;align-items:center;justify-content:center;transition:background .1s}
+.zbtn:hover{background:var(--bg2);color:var(--t1)}
+
+/* ════ MODALS ════ */
+.mov{display:none;position:fixed;inset:0;z-index:300;background:rgba(26,22,18,.45);align-items:center;justify-content:center}
+.mov.open{display:flex}
+.modal{background:var(--bg1);border-radius:var(--r-lg);border:.5px solid var(--bdrm);padding:24px 26px;width:420px;max-width:92vw;box-shadow:var(--shf);position:relative;max-height:90vh;overflow-y:auto}
+.mcls{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:50%;border:none;background:var(--bg2);color:var(--t2);font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.mt{font-family:var(--ff-d);font-size:16px;font-weight:400;margin-bottom:4px}
+.ms{font-size:12px;color:var(--t2);margin-bottom:16px;line-height:1.6}
+
+/* export modal */
+.exp-tabs{display:flex;gap:4px;background:var(--bg2);border-radius:var(--r-md);padding:4px;margin-bottom:16px}
+.exp-tab{flex:1;padding:6px;border-radius:var(--r-sm);border:none;background:transparent;font-size:12px;color:var(--t2);transition:all .12s;cursor:pointer}
+.exp-tab.active{background:var(--bg1);color:var(--t1);font-weight:500;box-shadow:var(--sh)}
+.exp-preview{border:.5px solid var(--bdrm);border-radius:var(--r-md);overflow:hidden;margin-bottom:14px;min-height:200px;background:var(--bg2)}
+#exp-iframe{width:100%;height:280px;border:none;display:block}
+.exp-page-sel{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.eps{padding:8px;border-radius:var(--r-md);border:.5px solid var(--bdrm);background:var(--bg2);cursor:pointer;font-size:11px;color:var(--t2);text-align:center;transition:all .12s}
+.eps:hover,.eps.active{border-color:var(--gold);background:var(--gold-p);color:var(--t1)}
+
+/* ════ TOAST ════ */
+#toast{position:fixed;bottom:56px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--t1);color:#fff;padding:7px 16px;border-radius:20px;font-size:12px;z-index:500;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* preview */
+body.preview .chdr,.preview .rh,.preview .sh{display:none!important}
+body.preview #sb,body.preview #rp,body.preview #zbar{display:none!important}
+body.preview #cwrap{flex:1}
+body.preview .page-header-strip{display:none}
+</style>
+</head>
+<body>
+
+<!-- ════ SETUP ════ -->
+<div id="setup">
+<div class="sbox">
+  <div class="slogo">因为遇见你 <span>· 协作策划站</span></div>
+  <div class="ssub">连接 Firebase Realtime Database，把 HTML 发给朋友粘贴同一份配置，即可实时协作，照片可互相上传下载。</div>
+  <div class="sfree"><i class="ti ti-check" style="font-size:12px"></i> 完全免费 · 无需 Storage</div>
+  <div class="sstep"><div class="snum">1</div><div><div class="stitle">新建 Firebase 项目</div><div class="sdesc">前往 <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Create a project（关闭 Analytics）</div></div></div>
+  <div class="sstep"><div class="snum">2</div><div><div class="stitle">创建 Realtime Database</div><div class="sdesc">左侧 Build → Realtime Database → Create database → <b>Start in test mode</b> → Enable</div></div></div>
+  <div class="sstep"><div class="snum">3</div><div><div class="stitle">获取配置</div><div class="sdesc">⚙️ Project settings → Your apps → 点 &lt;/&gt; → Register app → 选 <b>Use a &lt;script&gt; tag</b> → 复制 firebaseConfig 对象粘贴到下方</div></div></div>
+  <div class="sdiv"></div>
+  <div class="slabel">粘贴 firebaseConfig</div>
+  <textarea class="spaste" id="fb-json" placeholder='{ "apiKey": "...", "authDomain": "...", "databaseURL": "https://xxx.firebaseio.com", "projectId": "...", ... }'></textarea>
+  <div class="slabel">你的名字</div>
+  <input class="sinp" id="my-name" placeholder="例如：小婕" maxlength="12" style="margin-bottom:0">
+  <div class="serr" id="serr"></div>
+  <button class="sbtn" onclick="initFB()"><i class="ti ti-rocket" style="vertical-align:-2px;margin-right:4px"></i>连接并开始编辑</button>
+  <div style="font-size:10px;color:var(--t3);margin-top:10px;line-height:1.6">配置仅存在你的浏览器本地。把此 HTML 文件发给朋友，让他们粘贴同一份配置即可协作。</div>
+</div>
+</div>
+
+<!-- ════ APP ════ -->
+<div id="app">
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="logo"><div class="logo-dot"></div>因为遇见你<span class="logo-sub">协作策划站</span></div>
+  <div class="sst"><div class="ssdot" id="ssdot"></div><span id="sstxt">已同步</span></div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="cstack" id="cstack"></div>
+    <button class="tbtn" onclick="openM('inv-modal')"><i class="ti ti-user-plus"></i> 邀请</button>
+    <button class="tbtn" onclick="openM('exp-modal')"><i class="ti ti-download"></i> 导出</button>
+    <button class="tbtn gold" onclick="togglePreview()"><i class="ti ti-eye"></i> 预览</button>
+  </div>
+</div>
+
+<!-- WORKSPACE -->
+<div id="ws">
+
+<!-- SIDEBAR -->
+<div id="sb">
+  <!-- page tabs -->
+  <div class="page-tabs" id="page-tabs-list"></div>
+  <div class="sb-top" id="sb-content">
+    <!-- dynamically switches between block list and presence -->
+  </div>
+</div>
+
+<!-- CANVAS WRAP -->
+<div id="cwrap" onclick="cwClick(event)" onmousemove="sendCursor(event)"
+  ondragover="cdo(event)" ondrop="cdrop(event)">
+  <!-- page canvases injected here -->
+</div>
+
+<!-- RIGHT PANEL -->
+<div id="rp">
+  <div>
+    <div class="rplabel">选中模块</div>
+    <div style="margin-bottom:7px"><div class="rfi">标签名</div><input class="rpi" id="rp-tag" placeholder="—" oninput="rpTag(this.value)"></div>
+    <div style="margin-bottom:7px"><div class="rfi">X / Y</div><div class="rpsplit"><input class="rpi" id="rp-x" type="number" placeholder="X" oninput="rpPos()"><input class="rpi" id="rp-y" type="number" placeholder="Y" oninput="rpPos()"></div></div>
+    <div style="margin-bottom:7px"><div class="rfi">W / H</div><div class="rpsplit"><input class="rpi" id="rp-w" type="number" placeholder="W" oninput="rpSize()"><input class="rpi" id="rp-h" type="number" placeholder="H" oninput="rpSize()"></div></div>
+  </div>
+  <div class="rpdiv"></div>
+  <div>
+    <div class="rplabel">主题色</div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap">
+      <div class="csw active" style="background:#b98c5e" data-c="#b98c5e" onclick="setTheme(this)"></div>
+      <div class="csw" style="background:#7a9e8a" data-c="#7a9e8a" onclick="setTheme(this)"></div>
+      <div class="csw" style="background:#9e7a9e" data-c="#9e7a9e" onclick="setTheme(this)"></div>
+      <div class="csw" style="background:#9e857a" data-c="#9e857a" onclick="setTheme(this)"></div>
+      <div class="csw" style="background:#7a8f9e" data-c="#7a8f9e" onclick="setTheme(this)"></div>
+    </div>
+  </div>
+  <div class="rpdiv"></div>
+  <div>
+    <div class="rplabel">操作</div>
+    <button class="rpbtn" onclick="dupSel()"><i class="ti ti-copy"></i> 复制模块</button>
+    <button class="rpbtn" onclick="delSel()"><i class="ti ti-trash"></i> 删除模块</button>
+    <button class="rpbtn" onclick="toFront()"><i class="ti ti-layers-intersect"></i> 移到顶层</button>
+    <button class="rpbtn" onclick="toBack()"><i class="ti ti-layers-subtract"></i> 移到底层</button>
+  </div>
+  <div class="rpdiv"></div>
+  <div>
+    <div class="rplabel">发布</div>
+    <button class="rpbtn gold" onclick="openM('exp-modal')"><i class="ti ti-download"></i> 导出文件</button>
+    <button class="rpbtn" onclick="openM('inv-modal')"><i class="ti ti-user-plus"></i> 邀请协作者</button>
+  </div>
+</div>
+
+</div><!-- /ws -->
+</div><!-- /app -->
+
+<!-- ZOOM -->
+<div id="zbar">
+  <button class="zbtn" onclick="dz(-0.1)"><i class="ti ti-minus" style="font-size:11px"></i></button>
+  <span id="zlabel">100%</span>
+  <button class="zbtn" onclick="dz(0.1)"><i class="ti ti-plus" style="font-size:11px"></i></button>
+  <button class="zbtn" onclick="rzoom()"><i class="ti ti-focus-centered" style="font-size:13px"></i></button>
+</div>
+
+<!-- MODAL: 邀请 -->
+<div class="mov" id="inv-modal">
+  <div class="modal">
+    <button class="mcls" onclick="closeM('inv-modal')"><i class="ti ti-x" style="font-size:11px"></i></button>
+    <div class="mt">邀请协作者</div>
+    <div class="ms">把这个 HTML 文件发给朋友，让他们粘贴同一份 Firebase 配置，填写名字后连接，即可实时协作编辑。</div>
+    <div style="background:var(--bg2);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--t2);line-height:1.9;margin-bottom:14px">
+      <b style="font-weight:500;color:var(--t1)">步骤</b><br>
+      1. 把此 HTML 文件通过微信 / 邮件发给朋友<br>
+      2. 朋友打开 → 粘贴<b>同一份</b> firebaseConfig<br>
+      3. 填写名字 → 点击连接<br>
+      4. 所有编辑实时同步 ✓　照片互相可下载 ✓
+    </div>
+    <button class="tbtn gold" style="width:100%" onclick="closeM('inv-modal')"><i class="ti ti-check"></i> 好的</button>
+  </div>
+</div>
+
+<!-- MODAL: 导出 -->
+<div class="mov" id="exp-modal">
+  <div class="modal" style="width:480px">
+    <button class="mcls" onclick="closeM('exp-modal')"><i class="ti ti-x" style="font-size:11px"></i></button>
+    <div class="mt">导出文件</div>
+    <div class="ms">选择页面和格式，点击导出按钮</div>
+
+    <div style="margin-bottom:10px"><div class="rfi" style="margin-bottom:5px">选择页面</div>
+    <div class="exp-page-sel" id="exp-page-sel"></div></div>
+
+    <div class="exp-tabs">
+      <button class="exp-tab active" id="etab-print" onclick="switchExpTab('print',this)">🖨 打印 / PDF</button>
+      <button class="exp-tab" id="etab-html" onclick="switchExpTab('html',this)">📄 导出 HTML</button>
+      <button class="exp-tab" id="etab-img" onclick="switchExpTab('img',this)">🖼 截图 PNG</button>
+    </div>
+
+    <div id="exp-print-panel">
+      <div style="background:var(--bg2);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--t2);line-height:1.8;margin-bottom:12px">
+        点击下方按钮，浏览器会打开打印对话框。<br>
+        选择「另存为 PDF」即可保存为 PDF 文件。<br>
+        <b style="font-weight:500;color:var(--t1)">提示：</b>打印前先切换到你要导出的页面。
+      </div>
+      <button class="tbtn gold" style="width:100%" onclick="doPrint()"><i class="ti ti-printer"></i> 打开打印 / 另存为 PDF</button>
+    </div>
+
+    <div id="exp-html-panel" style="display:none">
+      <div style="background:var(--bg2);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--t2);line-height:1.8;margin-bottom:12px">
+        将当前所选页面的内容导出为独立 HTML 文件，可直接用浏览器打开分享。
+      </div>
+      <button class="tbtn gold" style="width:100%" onclick="doExportHTML()"><i class="ti ti-file-export"></i> 导出为 HTML 文件</button>
+    </div>
+
+    <div id="exp-img-panel" style="display:none">
+      <div style="background:var(--bg2);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--t2);line-height:1.8;margin-bottom:12px">
+        截图功能需要安装 <b style="font-weight:500">html2canvas</b> 库。点击下方按钮，浏览器会尝试生成 PNG 图片。<br>
+        <b style="color:var(--gold);font-weight:500">推荐做法：</b>切换到要截图的页面 → 使用系统截图工具（Mac: ⌘+Shift+4，Windows: Win+Shift+S）
+      </div>
+      <button class="tbtn gold" style="width:100%" onclick="doScreenshot()"><i class="ti ti-camera"></i> 生成 PNG 截图</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   PAGES CONFIG
+═══════════════════════════════════════════ */
+const PAGES = [
+  { id:'p0', label:'封面', short:'封面', desc:'主标题 & 邀请函' },
+  { id:'p1', label:'PART I. 入场', short:'PART I', desc:'入场 & 游戏互动' },
+  { id:'p2', label:'PART II. 游戏', short:'PART II', desc:'游戏环节' },
+  { id:'p3', label:'PART III. 仪式', short:'PART III', desc:'婚礼仪式' },
+  { id:'p4', label:'PART IV. 晚宴', short:'PART IV', desc:'晚宴' },
+  { id:'p5', label:'PART V. After Party', short:'PART V', desc:'After Party' },
+  { id:'p6', label:'照片上传', short:'照片', desc:'上传 & 下载', isPhoto:true },
+];
+
+/* ═══════════════════════════════════════════
+   GLOBALS
+═══════════════════════════════════════════ */
+let db, myId, myName, myColor;
+let zoom=1, selCard=null, ziMax=10;
+let dragType=null, curPage='p0';
+const localCards={}; // pageId_cardId -> el
+let ignoreRemote=false;
+const COLORS=['#b98c5e','#4a9e5c','#5a6eb9','#b95e8a','#5e9eb9','#9e9a4a'];
+const saveTimers={};
+
+/* ═══════════════════════════════════════════
+   SETUP
+═══════════════════════════════════════════ */
+window.addEventListener('load',()=>{
+  const s=localStorage.getItem('fb_cfg_v3');
+  if(s){try{const c=JSON.parse(s);myName=localStorage.getItem('my_name')||'协作者';myColor=localStorage.getItem('my_color')||COLORS[0];myId='u_'+Math.random().toString(36).slice(2,8);connectFB(c);}catch(e){}}
+});
+function initFB(){
+  let raw=document.getElementById('fb-json').value.trim();
+  raw=raw.replace(/^const\s+firebaseConfig\s*=\s*/,'').replace(/;$/,'').trim();
+  raw=raw.replace(/([{,]\s*)(\w+)\s*:/g,'$1"$2":').replace(/'/g,'"');
+  let cfg;
+  try{cfg=JSON.parse(raw);}catch(e){showErr('配置格式有误，请检查花括号 { } 内内容是否完整');return;}
+  if(!cfg.databaseURL){showErr('缺少 databaseURL，请确认已创建 Realtime Database');return;}
+  myName=document.getElementById('my-name').value.trim()||'协作者';
+  myId='u_'+Math.random().toString(36).slice(2,8);
+  myColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+  localStorage.setItem('fb_cfg_v3',JSON.stringify(cfg));
+  localStorage.setItem('my_name',myName);
+  localStorage.setItem('my_color',myColor);
+  connectFB(cfg);
+}
+function connectFB(cfg){
+  try{if(!firebase.apps.length)firebase.initializeApp(cfg);db=firebase.database();}
+  catch(e){showErr('Firebase 初始化失败：'+e.message);return;}
+  db.ref('.info/connected').on('value',snap=>{
+    if(snap.val()){
+      document.getElementById('setup').style.display='none';
+      document.getElementById('app').classList.add('ready');
+      startApp();
+    }
+  });
+  setTimeout(()=>{if(!document.getElementById('app').classList.contains('ready'))showErr('连接超时，请检查 databaseURL 和数据库规则（需 test mode）');},8000);
+}
+function showErr(m){const e=document.getElementById('serr');e.textContent=m;e.style.display='block';}
+
+/* ═══════════════════════════════════════════
+   START
+═══════════════════════════════════════════ */
+function startApp(){
+  buildPageTabs();
+  buildCanvases();
+  switchPage('p0');
+  setupPresence();
+  listenAllCards();
+  listenCursors();
+  listenTheme();
+  listenPhotos();
+  setupKeyboard();
+  initDefaultCards();
+  document.getElementById('cwrap').addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();dz(e.deltaY<0?.05:-.05);}},{passive:false});
+  buildSidebar('p0');
+  buildExportPageSel();
+}
+
+/* ═══════════════════════════════════════════
+   PAGE TABS
+═══════════════════════════════════════════ */
+function buildPageTabs(){
+  const el=document.getElementById('page-tabs-list');
+  PAGES.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='page-tab'+(p.id==='p0'?' active':'');
+    d.dataset.page=p.id;
+    d.innerHTML=`<div class="ptdot"></div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${p.label}</span>`;
+    d.onclick=()=>switchPage(p.id);
+    el.appendChild(d);
+  });
+}
+function switchPage(pid){
+  curPage=pid;
+  // tabs
+  document.querySelectorAll('.page-tab').forEach(t=>t.classList.toggle('active',t.dataset.page===pid));
+  // canvases
+  document.querySelectorAll('.page-canvas').forEach(c=>c.classList.toggle('active-page',c.dataset.page===pid));
+  // sidebar
+  buildSidebar(pid);
+  selectCard(null);
+}
+
+/* ═══════════════════════════════════════════
+   BUILD CANVASES
+═══════════════════════════════════════════ */
+function buildCanvases(){
+  const wrap=document.getElementById('cwrap');
+  PAGES.forEach(p=>{
+    const div=document.createElement('div');
+    div.className='page-canvas'+(p.id==='p0'?' active-page':'');
+    div.dataset.page=p.id;
+    div.ondragover=cdo; div.ondrop=cdrop;
+    if(!p.isPhoto){
+      // page header
+      const hdr=document.createElement('div');
+      hdr.className='page-header-strip';
+      hdr.innerHTML=`<div class="php-dot"></div><div class="php-title">${p.label} · ${p.desc}</div>`;
+      div.appendChild(hdr);
+      div.style.paddingTop='44px';
+    } else {
+      // photo gallery UI
+      div.innerHTML=buildPhotoGalleryHTML();
+    }
+    wrap.appendChild(div);
+  });
+}
+function buildPhotoGalleryHTML(){
+  return `<div class="photo-gallery">
+    <div class="pg-title">照片上传 & 下载</div>
+    <div class="pg-sub">上传后所有协作者均可查看和下载</div>
+    <label class="pg-upload-btn"><i class="ti ti-photo-plus" style="font-size:16px"></i> 上传照片<input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)"></label>
+    <div class="pg-grid" id="pg-grid"><div class="pg-empty"><i class="ti ti-photo-off"></i><div>暂无照片</div><div style="font-size:11px;margin-top:4px">点击上方按钮上传</div></div></div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════ */
+function buildSidebar(pid){
+  const p=PAGES.find(x=>x.id===pid);
+  const el=document.getElementById('sb-content');
+  if(p&&p.isPhoto){
+    el.innerHTML=`
+      <div class="sblabel" style="margin-bottom:8px">照片页</div>
+      <div style="font-size:11px;color:var(--t2);line-height:1.7;padding:0 4px">上传照片后，所有协作者均可看到并下载。<br><br>照片自动压缩存入数据库，建议单张原图不超过 5MB。</div>
+      <div style="margin-top:16px">
+        <div class="sblabel">在线协作者</div>
+        <div id="presence-list-p"></div>
+      </div>`;
+    renderPresence(window._presenceData||{});
+    return;
+  }
+  el.innerHTML=`
+    <div class="sblabel">添加模块</div>
+    <div class="bchip" draggable="true" ondragstart="ds(event,'hero')"><i class="ti ti-letter-a"></i><div><div>主标题</div><small>封面大字</small></div></div>
+    <div class="bchip" draggable="true" ondragstart="ds(event,'part')"><i class="ti ti-bookmark"></i><div><div>章节标题</div><small>PART I / II…</small></div></div>
+    <div class="bchip" draggable="true" ondragstart="ds(event,'photo')"><i class="ti ti-photo"></i><div><div>照片</div><small>上传本地图片</small></div></div>
+    <div class="bchip" draggable="true" ondragstart="ds(event,'timeline')"><i class="ti ti-timeline"></i><div><div>时间轴</div><small>故事章节</small></div></div>
+    <div class="bchip" draggable="true" ondragstart="ds(event,'invite')"><i class="ti ti-mail-heart"></i><div><div>邀请函</div><small>含二维码</small></div></div>
+    <div class="bchip" draggable="true" ondragstart="ds(event,'games')"><i class="ti ti-puzzle"></i><div><div>游戏区</div><small>四大打卡站</small></div></div>
+    <div class="bchip" draggable="true" ondragstart="ds(event,'text')"><i class="ti ti-align-left"></i><div><div>文字块</div><small>自由文字</small></div></div>
+    <div style="margin-top:16px">
+      <div class="sblabel">在线协作者</div>
+      <div id="presence-list-p"></div>
+    </div>`;
+  renderPresence(window._presenceData||{});
+}
+
+/* ═══════════════════════════════════════════
+   PRESENCE
+═══════════════════════════════════════════ */
+function setupPresence(){
+  const myRef=db.ref('presence/'+myId);
+  myRef.set({name:myName,color:myColor,t:Date.now()});
+  myRef.onDisconnect().remove();
+  db.ref('presence').on('value',snap=>{
+    window._presenceData=snap.val()||{};
+    renderPresence(window._presenceData);
+    renderStack(window._presenceData);
+  });
+}
+function renderPresence(users){
+  ['presence-list-p'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.innerHTML='';
+    Object.entries(users).forEach(([id2,u])=>{
+      const d=document.createElement('div');d.className='pitem';
+      d.innerHTML=`<div class="pav" style="background:${u.color}22;color:${u.color}">${u.name[0]}</div><div style="flex:1;font-size:11px">${u.name}${id2===myId?' (你)':''}</div><div class="ponline">●</div>`;
+      el.appendChild(d);
+    });
+  });
+}
+function renderStack(users){
+  const el=document.getElementById('cstack');el.innerHTML='';
+  Object.entries(users).slice(0,5).forEach(([id,u])=>{
+    const d=document.createElement('div');d.className='cav';
+    d.style.cssText=`background:${u.color}33;color:${u.color}`;
+    d.innerHTML=`${u.name[0]}<div class="cavtip">${u.name}</div>`;
+    el.appendChild(d);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   CURSORS
+═══════════════════════════════════════════ */
+let curT=0;
+function sendCursor(e){
+  const now=Date.now();if(now-curT<60)return;curT=now;
+  const canvas=document.querySelector('.page-canvas.active-page');if(!canvas)return;
+  const r=canvas.getBoundingClientRect();
+  db.ref('cursors/'+myId).set({x:Math.round((e.clientX-r.left)/zoom),y:Math.round((e.clientY-r.top)/zoom),name:myName,color:myColor,page:curPage,t:now});
+}
+function listenCursors(){
+  db.ref('cursors').on('value',snap=>{
+    const all=snap.val()||{},now=Date.now();
+    document.querySelectorAll('.rcursor').forEach(el=>{if(!all[el.dataset.uid]||el.dataset.uid===myId)el.remove();});
+    Object.entries(all).forEach(([id,c])=>{
+      if(id===myId||now-c.t>6000)return;
+      const canvas=document.querySelector(`.page-canvas[data-page="${c.page}"]`);if(!canvas)return;
+      let el=canvas.querySelector(`.rcursor[data-uid="${id}"]`);
+      if(!el){el=document.createElement('div');el.className='rcursor';el.dataset.uid=id;el.style.setProperty('--cc',c.color);el.innerHTML=`<div class="rcursor-a"></div><div class="rcursor-t">${c.name}</div>`;canvas.appendChild(el);}
+      el.style.left=c.x+'px';el.style.top=c.y+'px';
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════
+   CARDS — FIREBASE
+═══════════════════════════════════════════ */
+function listenAllCards(){
+  PAGES.filter(p=>!p.isPhoto).forEach(p=>{
+    db.ref('cards/'+p.id).on('value',snap=>{
+      if(ignoreRemote)return;
+      const data=snap.val()||{};
+      const canvas=document.querySelector(`.page-canvas[data-page="${p.id}"]`);if(!canvas)return;
+      // remove deleted
+      Object.keys(localCards).filter(k=>k.startsWith(p.id+'_')).forEach(k=>{
+        if(!data[k.slice(p.id.length+1)]){localCards[k].remove();delete localCards[k];}
+      });
+      Object.entries(data).forEach(([cid,cd])=>{
+        const key=p.id+'_'+cid;
+        if(localCards[key])remoteUpdate(localCards[key],cd);
+        else{const el=buildCard(cid,cd,p.id);canvas.appendChild(el);localCards[key]=el;}
+      });
+    });
+  });
+}
+function remoteUpdate(el,cd){
+  if(el!==selCard){
+    el.style.left=(cd.x||0)+'px';el.style.top=(cd.y||0)+'px';
+    if(cd.w)el.style.width=cd.w+'px';if(cd.h)el.style.minHeight=cd.h+'px';
+    if(cd.zi)el.style.zIndex=cd.zi;
+  }
+  if(cd.body&&!el.querySelector('[contenteditable]:focus')){
+    const b=el.querySelector('.cbody,.pa,.inv-body');if(b&&b.innerHTML!==cd.body)b.innerHTML=cd.body;
+  }
+  if(cd.tag){const t=el.querySelector('.ctag');if(t)t.textContent=cd.tag;}
+}
+function saveCard(pid,cid){
+  const key=pid+'_'+cid;const el=localCards[key];if(!el)return;
+  const tag=el.querySelector('.ctag');const body=el.querySelector('.cbody,.pa,.inv-body');
+  setSaving(true);ignoreRemote=true;
+  db.ref('cards/'+pid+'/'+cid).set({
+    x:parseInt(el.style.left)||0,y:parseInt(el.style.top)||0,
+    w:el.offsetWidth,h:el.offsetHeight,zi:parseInt(el.style.zIndex)||1,
+    tag:tag?tag.textContent:'',body:body?body.innerHTML:'',
+    type:el.dataset.type||'text',by:myName,t:Date.now()
+  }).then(()=>{ignoreRemote=false;setSaving(false);});
+}
+function scheduleSave(pid,cid,d=500){
+  const k=pid+'_'+cid;clearTimeout(saveTimers[k]);saveTimers[k]=setTimeout(()=>saveCard(pid,cid),d);
+}
+function setSaving(on){
+  document.getElementById('ssdot').classList.toggle('saving',on);
+  document.getElementById('sstxt').textContent=on?'同步中…':'已同步 ✓';
+}
+
+/* ═══════════════════════════════════════════
+   BUILD CARD ELEMENT
+═══════════════════════════════════════════ */
+function buildCard(cid,cd,pid){
+  const el=document.createElement('div');
+  el.className='card';el.dataset.id=cid;el.dataset.pid=pid;el.dataset.type=cd.type||'text';
+  el.style.left=(cd.x||0)+'px';el.style.top=(cd.y||0)+'px';
+  if(cd.w)el.style.width=cd.w+'px';if(cd.h)el.style.minHeight=cd.h+'px';
+  el.style.zIndex=cd.zi||1;
+  const handles='<div class="sh sh-tl"></div><div class="sh sh-tr"></div><div class="sh sh-bl"></div><div class="sh sh-br"></div>';
+  const rh='<div class="rh" onmousedown="startResize(event)"><i class="ti ti-arrows-diagonal" style="font-size:9px"></i></div>';
+  const tools=`<div class="ctools"><button class="ctool" onclick="dupCard(this)"><i class="ti ti-copy"></i></button><button class="ctool del" onclick="rmCard(this)"><i class="ti ti-trash"></i></button></div>`;
+  const body=cd.body||defaultBody(cd.type,pid);
+  el.innerHTML=`<div class="chdr" onmousedown="startDrag(event)"><span class="ctag">${cd.tag||typeLabel(cd.type)}</span>${tools}</div>${body}${rh}${handles}`;
+  el.addEventListener('focusout',e=>{if(e.target.isContentEditable)scheduleSave(pid,cid);});
+  el.addEventListener('mousedown',()=>selectCard(el));
+  if(cd.type==='photo'){const pa=el.querySelector('.pa');if(pa)pa.onclick=()=>triggerPhotoCard(el,pid,cid);}
+  return el;
+}
+function typeLabel(t){return{hero:'主标题',part:'章节标题',photo:'照片',timeline:'时间轴',invite:'邀请函',games:'游戏区',text:'文字块'}[t]||'模块';}
+function defaultBody(type,pid){
+  const p=PAGES.find(x=>x.id===pid)||{};
+  const cb=s=>`<div class="cbody">${s}</div>`;
+  switch(type){
+    case 'hero':return cb(`<div class="hero-t" contenteditable="true">因为遇见你</div><div class="gline"></div><div class="hero-s" contenteditable="true">一场关于相遇、陪伴与新生的庆典<br>婚礼 × 宝宝一周岁</div><div class="hero-d" contenteditable="true">二〇二五年 · 秋 · 某个幸福的日子</div>`);
+    case 'part':return cb(`<div class="part-en" contenteditable="true">${p.label||'PART I.'}</div><div class="part-t" contenteditable="true">${p.desc||'章节名称'}</div><div class="gline"></div><div class="part-desc" contenteditable="true">点击这里填写本章节说明……</div>`);
+    case 'photo':return`<div class="pa" style="min-height:150px"><i class="ti ti-photo-heart"></i><span>点击上传照片</span><small style="font-size:10px">自动压缩 · 实时同步</small><div class="pa-ov"><i class="ti ti-camera" style="font-size:16px"></i> 更换</div></div>`;
+    case 'timeline':return cb(`<div class="tl-item"><div class="tll"><div class="tldot"></div><div class="tlline"></div></div><div><div class="tlch" contenteditable="true">CHAPTER 01</div><div class="tln" contenteditable="true">那年相遇</div><div class="tld" contenteditable="true">两个人的故事，从某一个平凡的瞬间开始……</div></div></div><div class="tl-item"><div class="tll"><div class="tldot"></div><div class="tlline"></div></div><div><div class="tlch" contenteditable="true">CHAPTER 02</div><div class="tln" contenteditable="true">因你而来</div><div class="tld" contenteditable="true">慢慢发现你就是那个人……</div></div></div><div class="tl-item"><div class="tll"><div class="tldot"></div><div class="tlline"></div></div><div><div class="tlch" contenteditable="true">CHAPTER 03</div><div class="tln" contenteditable="true">执手相伴</div><div class="tld" contenteditable="true">「我愿意」两个字，改变了所有……</div></div></div><div class="tl-item"><div class="tll"><div class="tldot"></div></div><div><div class="tlch" contenteditable="true">CHAPTER 04</div><div class="tln" contenteditable="true">因你降临</div><div class="tld" contenteditable="true">小小的你让故事有了最美的续集……</div></div></div>`);
+    case 'invite':return`<div class="inv-body"><div class="inv-en">WEDDING INVITATION</div><div class="inv-t" contenteditable="true">婚礼邀请函</div><div class="inv-hr"></div><div class="inv-info" contenteditable="true">📅 2025年某月某日 星期六<br>⏰ 中午 11:30 入场<br>📍 某城市 · 某宴会厅<br>🎂 宝宝一周岁 同庆</div><div class="inv-qr"><i class="ti ti-qrcode"></i></div></div>`;
+    case 'games':return cb(`<div style="font-size:10px;color:var(--t3);margin-bottom:9px;letter-spacing:.06em">四大打卡站 · 顺时针轮换</div><div class="grow"><div class="gnum">01</div><div class="ginfo"><p contenteditable="true">那年相遇</p><span contenteditable="true">寻找彼此的第一张合照</span></div><div class="gbadge">+3分</div></div><div class="grow"><div class="gnum">02</div><div class="ginfo"><p contenteditable="true">因你而来</p><span contenteditable="true">写下你们最爱去的地方</span></div><div class="gbadge">+3分</div></div><div class="grow"><div class="gnum">03</div><div class="ginfo"><p contenteditable="true">执手相伴</p><span contenteditable="true">亲手为婚纱与宝宝礼服添上心意</span></div><div class="gbadge">+5分</div></div><div class="grow"><div class="gnum">04</div><div class="ginfo"><p contenteditable="true">因你降临</p><span contenteditable="true">许下对宝宝的第一个祝福</span></div><div class="gbadge">+3分</div></div>`);
+    default:return cb(`<div class="txt-b" contenteditable="true">点击这里输入内容……</div>`);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   DEFAULT CARDS
+═══════════════════════════════════════════ */
+function initDefaultCards(){
+  db.ref('cards/p0').once('value',snap=>{
+    if(snap.val())return;
+    const defs=[
+      {id:'c-cover',type:'hero',x:40,y:56,w:460,tag:'主标题 · 封面'},
+      {id:'c-invite',type:'invite',x:548,y:56,w:265,tag:'邀请函'},
+    ];
+    defs.forEach((d,i)=>{db.ref('cards/p0/'+d.id).set({...d,zi:i+1,body:defaultBody(d.type,'p0'),by:myName,t:Date.now()});});
+  });
+  db.ref('cards/p1').once('value',snap=>{
+    if(snap.val())return;
+    const defs=[
+      {id:'c-part1',type:'part',x:40,y:56,w:340,tag:'章节标题'},
+      {id:'c-timeline',type:'timeline',x:40,y:260,w:400,tag:'故事时间轴'},
+      {id:'c-games',type:'games',x:480,y:56,w:360,tag:'互动游戏区'},
+    ];
+    defs.forEach((d,i)=>{db.ref('cards/p1/'+d.id).set({...d,zi:i+1,body:defaultBody(d.type,'p1'),by:myName,t:Date.now()});});
+  });
+  ['p2','p3','p4','p5'].forEach(pid=>{
+    db.ref('cards/'+pid).once('value',snap=>{
+      if(snap.val())return;
+      const p=PAGES.find(x=>x.id===pid);
+      db.ref('cards/'+pid+'/c-part').set({id:'c-part',type:'part',x:40,y:56,w:380,tag:'章节标题',zi:1,body:defaultBody('part',pid),by:myName,t:Date.now()});
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════
+   PHOTO CARD (base64 in DB)
+═══════════════════════════════════════════ */
+function triggerPhotoCard(card,pid,cid){
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.style.display='none';
+  inp.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    if(file.size>8*1024*1024){toast('图片超过 8MB，请压缩后上传');return;}
+    const pa=card.querySelector('.pa');
+    pa.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="spin"></div><span style="font-size:11px;color:var(--t2)">处理中…</span></div>';
+    compressImg(file,900,900,0.75,(dataUrl,sz)=>{
+      pa.innerHTML=`<img src="${dataUrl}"><div class="pa-ov"><i class="ti ti-camera" style="font-size:16px"></i> 更换</div>`;
+      pa.onclick=()=>triggerPhotoCard(card,pid,cid);
+      saveCard(pid,cid);toast(`照片已同步（${sz}）✓`);
+    });
+  };
+  document.body.appendChild(inp);inp.click();setTimeout(()=>inp.remove(),1000);
+}
+
+/* ═══════════════════════════════════════════
+   PHOTO GALLERY PAGE (p6)
+═══════════════════════════════════════════ */
+function handlePhotoUpload(e){
+  const files=[...e.target.files];
+  files.forEach(file=>{
+    if(file.size>8*1024*1024){toast('跳过超过 8MB 的文件：'+file.name);return;}
+    compressImg(file,1200,1200,0.82,(dataUrl,sz)=>{
+      const photoId='ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,5);
+      db.ref('photos/'+photoId).set({name:file.name,data:dataUrl,size:sz,by:myName,t:Date.now()});
+      toast(`已上传：${file.name}（${sz}）`);
+    });
+  });
+  e.target.value='';
+}
+function listenPhotos(){
+  db.ref('photos').on('value',snap=>{
+    const photos=snap.val()||{};
+    renderPhotoGallery(photos);
+  });
+}
+function renderPhotoGallery(photos){
+  const grid=document.getElementById('pg-grid');if(!grid)return;
+  const entries=Object.entries(photos).sort((a,b)=>b[1].t-a[1].t);
+  if(entries.length===0){
+    grid.innerHTML='<div class="pg-empty"><i class="ti ti-photo-off"></i><div>暂无照片</div><div style="font-size:11px;margin-top:4px">点击上方按钮上传</div></div>';
+    return;
+  }
+  grid.innerHTML='';
+  entries.forEach(([id,ph])=>{
+    const div=document.createElement('div');div.className='pg-photo';
+    div.innerHTML=`<img src="${ph.data}" alt="${ph.name}" loading="lazy">
+      <div class="pg-photo-info">
+        <div class="pg-photo-name">${ph.name||'照片'}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:10px;color:rgba(255,255,255,.7)">${ph.by||''} · ${ph.size||''}</span>
+          <a class="pg-dl-btn" href="${ph.data}" download="${ph.name||'photo.jpg'}"><i class="ti ti-download" style="font-size:12px"></i> 下载</a>
+        </div>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   IMAGE COMPRESSION
+═══════════════════════════════════════════ */
+function compressImg(file,maxW,maxH,q,cb){
+  const r=new FileReader();
+  r.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      let w=img.width,h=img.height;
+      const ratio=Math.min(maxW/w,maxH/h,1);
+      w=Math.round(w*ratio);h=Math.round(h*ratio);
+      const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      const dataUrl=cv.toDataURL('image/jpeg',q);
+      cb(dataUrl,Math.round(dataUrl.length*.75/1024)+'KB');
+    };
+    img.src=ev.target.result;
+  };
+  r.readAsDataURL(file);
+}
+
+/* ═══════════════════════════════════════════
+   DRAG CARDS
+═══════════════════════════════════════════ */
+function startDrag(e){
+  if(e.target.closest('.ctools'))return;
+  const card=e.currentTarget.closest('.card');selectCard(card);e.preventDefault();
+  const sx=e.clientX,sy=e.clientY,sl=parseInt(card.style.left)||0,st=parseInt(card.style.top)||0;
+  card.style.zIndex=++ziMax;
+  const pid=card.dataset.pid,cid=card.dataset.id;
+  function mm(ev){card.style.left=Math.max(0,sl+(ev.clientX-sx)/zoom)+'px';card.style.top=Math.max(0,st+(ev.clientY-sy)/zoom)+'px';syncRP(card);scheduleSave(pid,cid,250);}
+  function mu(){document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);saveCard(pid,cid);}
+  document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
+}
+function startResize(e){
+  e.stopPropagation();e.preventDefault();
+  const card=e.currentTarget.closest('.card');
+  const sx=e.clientX,sy=e.clientY,sw=card.offsetWidth,sh2=card.offsetHeight;
+  const pid=card.dataset.pid,cid=card.dataset.id;
+  function mm(ev){card.style.width=Math.max(140,sw+(ev.clientX-sx)/zoom)+'px';card.style.minHeight=Math.max(50,sh2+(ev.clientY-sy)/zoom)+'px';syncRP(card);scheduleSave(pid,cid,250);}
+  function mu(){document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);saveCard(pid,cid);}
+  document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
+}
+
+/* ═══════════════════════════════════════════
+   SELECT / CANVAS CLICK
+═══════════════════════════════════════════ */
+function selectCard(card){
+  if(selCard)selCard.classList.remove('selected');
+  selCard=card;if(card){card.classList.add('selected');syncRP(card);}
+}
+function cwClick(e){
+  if(e.target.classList.contains('page-canvas')||e.target===document.getElementById('cwrap'))selectCard(null);
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR DRAG-DROP
+═══════════════════════════════════════════ */
+function ds(e,type){dragType=type;}
+function cdo(e){e.preventDefault();const c=e.currentTarget.closest('.page-canvas');if(c)c.classList.add('drag-over');}
+function cdrop(e){
+  e.preventDefault();
+  const canvas=e.currentTarget.closest('.page-canvas');
+  if(canvas)canvas.classList.remove('drag-over');
+  if(!dragType)return;
+  const pid=canvas?canvas.dataset.page:curPage;
+  if(PAGES.find(p=>p.id===pid)?.isPhoto){toast('照片页不支持添加卡片');dragType=null;return;}
+  const r=(canvas||document.querySelector('.page-canvas.active-page')).getBoundingClientRect();
+  mkCard(dragType,Math.max(0,(e.clientX-r.left)/zoom),Math.max(0,(e.clientY-r.top)/zoom),pid);
+  dragType=null;
+}
+function mkCard(type,x,y,pid){
+  pid=pid||curPage;
+  if(PAGES.find(p=>p.id===pid)?.isPhoto){toast('照片页请使用上方上传按钮');return;}
+  const cid='c_'+Date.now();
+  const w={hero:420,part:360,photo:260,timeline:400,invite:265,games:360,text:280}[type]||280;
+  const cd={type,x:Math.round(x),y:Math.round(y),w,h:60,zi:++ziMax,tag:typeLabel(type),body:defaultBody(type,pid),by:myName,t:Date.now()};
+  const canvas=document.querySelector(`.page-canvas[data-page="${pid}"]`);if(!canvas)return;
+  const el=buildCard(cid,cd,pid);canvas.appendChild(el);
+  const key=pid+'_'+cid;localCards[key]=el;
+  ignoreRemote=true;db.ref('cards/'+pid+'/'+cid).set(cd).then(()=>{ignoreRemote=false;});
+  selectCard(el);
+}
+
+/* ═══════════════════════════════════════════
+   DUP / DELETE
+═══════════════════════════════════════════ */
+function dupCard(btn){
+  const orig=btn.closest('.card'),pid=orig.dataset.pid,cid=orig.dataset.id;
+  db.ref('cards/'+pid+'/'+cid).once('value',snap=>{
+    const d=snap.val();if(!d)return;
+    const id2='c_'+Date.now();d.x+=20;d.y+=20;d.zi=++ziMax;d.by=myName;d.t=Date.now();
+    db.ref('cards/'+pid+'/'+id2).set(d);
+  });
+}
+function rmCard(btn){
+  const card=btn.closest('.card'),pid=card.dataset.pid,cid=card.dataset.id;
+  if(selCard===card)selCard=null;
+  card.remove();delete localCards[pid+'_'+cid];
+  db.ref('cards/'+pid+'/'+cid).remove();
+  toast('已删除模块');
+}
+function delSel(){if(selCard)selCard.querySelector('.del')?.click();}
+function dupSel(){if(selCard)selCard.querySelector('.ctool:not(.del)')?.click();}
+function toFront(){if(selCard){selCard.style.zIndex=++ziMax;saveCard(selCard.dataset.pid,selCard.dataset.id);}}
+function toBack(){if(selCard){selCard.style.zIndex=1;saveCard(selCard.dataset.pid,selCard.dataset.id);}}
+
+/* ═══════════════════════════════════════════
+   PROPS PANEL
+═══════════════════════════════════════════ */
+function syncRP(card){
+  if(!card)return;
+  document.getElementById('rp-x').value=Math.round(parseInt(card.style.left)||0);
+  document.getElementById('rp-y').value=Math.round(parseInt(card.style.top)||0);
+  document.getElementById('rp-w').value=Math.round(card.offsetWidth);
+  document.getElementById('rp-h').value=Math.round(card.offsetHeight);
+  const t=card.querySelector('.ctag');document.getElementById('rp-tag').value=t?t.textContent:'';
+}
+function rpTag(v){if(selCard){const t=selCard.querySelector('.ctag');if(t)t.textContent=v;scheduleSave(selCard.dataset.pid,selCard.dataset.id);}}
+function rpPos(){if(!selCard)return;const x=document.getElementById('rp-x').value,y=document.getElementById('rp-y').value;if(x!=='')selCard.style.left=Math.max(0,+x)+'px';if(y!=='')selCard.style.top=Math.max(0,+y)+'px';scheduleSave(selCard.dataset.pid,selCard.dataset.id);}
+function rpSize(){if(!selCard)return;const w=document.getElementById('rp-w').value,h=document.getElementById('rp-h').value;if(w!=='')selCard.style.width=Math.max(140,+w)+'px';if(h!=='')selCard.style.minHeight=Math.max(50,+h)+'px';scheduleSave(selCard.dataset.pid,selCard.dataset.id);}
+
+/* ═══════════════════════════════════════════
+   THEME
+═══════════════════════════════════════════ */
+function setTheme(chip){
+  document.querySelectorAll('.csw').forEach(c=>c.classList.remove('active'));chip.classList.add('active');
+  applyTheme(chip.dataset.c);db.ref('theme').set(chip.dataset.c);
+}
+function applyTheme(c){
+  document.documentElement.style.setProperty('--gold',c);
+  const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);
+  document.documentElement.style.setProperty('--gold-l',`rgba(${r},${g},${b},.4)`);
+  document.documentElement.style.setProperty('--gold-p',`rgba(${r},${g},${b},.1)`);
+}
+function listenTheme(){
+  db.ref('theme').on('value',snap=>{if(snap.val()){applyTheme(snap.val());document.querySelectorAll('.csw').forEach(c=>c.classList.toggle('active',c.dataset.c===snap.val()));}});
+}
+
+/* ═══════════════════════════════════════════
+   ZOOM
+═══════════════════════════════════════════ */
+function dz(d){zoom=Math.min(2,Math.max(.25,zoom+d));applyZoom();}
+function rzoom(){zoom=1;applyZoom();}
+function applyZoom(){
+  document.querySelectorAll('.page-canvas').forEach(c=>{c.style.transform=`scale(${zoom})`;c.style.transformOrigin='0 0';});
+  document.getElementById('zlabel').textContent=Math.round(zoom*100)+'%';
+}
+
+/* ═══════════════════════════════════════════
+   PREVIEW
+═══════════════════════════════════════════ */
+function togglePreview(){const on=document.body.classList.toggle('preview');toast(on?'预览模式 · 再次点击退出':'已退出预览');}
+
+/* ═══════════════════════════════════════════
+   EXPORT (REAL)
+═══════════════════════════════════════════ */
+let expTab='print', expPageId='p0';
+
+function buildExportPageSel(){
+  const el=document.getElementById('exp-page-sel');if(!el)return;
+  el.innerHTML='';
+  PAGES.forEach(p=>{
+    const d=document.createElement('div');d.className='eps'+(p.id==='p0'?' active':'');
+    d.textContent=p.label;d.dataset.pid=p.id;
+    d.onclick=()=>{document.querySelectorAll('.eps').forEach(e=>e.classList.remove('active'));d.classList.add('active');expPageId=p.id;};
+    el.appendChild(d);
+  });
+}
+function switchExpTab(tab,btn){
+  expTab=tab;
+  document.querySelectorAll('.exp-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('exp-print-panel').style.display=tab==='print'?'':'none';
+  document.getElementById('exp-html-panel').style.display=tab==='html'?'':'none';
+  document.getElementById('exp-img-panel').style.display=tab==='img'?'':'none';
+}
+function doPrint(){
+  // switch to selected page then print
+  switchPage(expPageId);
+  closeM('exp-modal');
+  setTimeout(()=>{window.print();},400);
+}
+function doExportHTML(){
+  const canvas=document.querySelector(`.page-canvas[data-page="${expPageId}"]`);
+  if(!canvas){toast('找不到所选页面');return;}
+  const p=PAGES.find(x=>x.id===expPageId);
+  // gather cards html
+  const cardsHTML=canvas.innerHTML;
+  const html=`<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>因为遇见你 · ${p?p.label:''}</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:${getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()||'#b98c5e'};--gold-l:rgba(185,140,94,.4);--gold-p:rgba(185,140,94,.1);--t1:#1a1612;--t2:#6b5f52;--t3:#a8998a;--bg1:#fff;--bg2:#faf8f5;--bg3:#f2ede7;--bdr:rgba(185,140,94,.15);--bdrm:rgba(185,140,94,.28);--r-sm:6px;--r-md:10px;--r-lg:16px;--sh:0 2px 12px rgba(90,60,20,.08);--ff-d:'Noto Serif SC',serif;--ff-b:'Noto Sans SC','PingFang SC',sans-serif}
+body{font-family:var(--ff-b);background:var(--bg3);padding:32px;color:var(--t1)}
+.page-wrap{position:relative;width:1200px;min-height:860px;margin:0 auto;background:var(--bg1);border-radius:16px;padding:20px}
+.card{position:absolute;background:var(--bg1);border-radius:16px;border:.5px solid var(--bdrm);box-shadow:0 2px 12px rgba(90,60,20,.08)}
+.chdr{display:none}.rh{display:none}.sh{display:none}
+.cbody{padding:13px}.pa{width:100%;min-height:150px;background:var(--bg2);border-radius:0 0 16px 16px;overflow:hidden;position:relative}.pa img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-t{font-family:var(--ff-d);font-size:28px;font-weight:300;line-height:1.25;letter-spacing:.04em}
+.gline{width:30px;height:1.5px;background:var(--gold);border-radius:1px;margin:10px 0}
+.hero-s{font-size:13px;color:var(--t2);line-height:1.8}.hero-d{font-size:11px;color:var(--gold);letter-spacing:.1em;margin-top:9px;font-family:var(--ff-d)}
+.part-t{font-family:var(--ff-d);font-size:22px;font-weight:300;letter-spacing:.06em}.part-en{font-size:10px;letter-spacing:.2em;color:var(--gold);margin-bottom:8px}.part-desc{font-size:13px;color:var(--t2);line-height:1.8;margin-top:10px}
+.tl-item{display:flex;gap:12px;margin-bottom:14px}.tll{display:flex;flex-direction:column;align-items:center;flex-shrink:0}.tldot{width:8px;height:8px;border-radius:50%;background:var(--gold)}.tlline{width:1px;flex:1;background:var(--gold-l);min-height:24px}.tlch{font-size:9px;color:var(--gold);letter-spacing:.1em;margin-bottom:2px}.tln{font-family:var(--ff-d);font-size:14px;font-weight:400;margin-bottom:3px}.tld{font-size:12px;color:var(--t2);line-height:1.7}
+.inv-body{text-align:center;padding:16px 14px}.inv-en{font-size:9px;letter-spacing:.2em;color:var(--t3);margin-bottom:4px}.inv-t{font-family:var(--ff-d);font-size:22px;font-weight:300;letter-spacing:.08em}.inv-hr{width:40px;height:.5px;background:var(--gold);margin:10px auto}.inv-info{font-size:12px;color:var(--t2);line-height:2.2}.inv-qr{width:60px;height:60px;margin:11px auto 0;background:var(--bg2);border-radius:10px;border:.5px solid var(--bdrm);display:flex;align-items:center;justify-content:center}
+.grow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--bdr)}.grow:last-child{border-bottom:none}.gnum{font-family:var(--ff-d);font-size:17px;font-weight:300;color:var(--gold);width:24px;flex-shrink:0}.ginfo p{font-size:12px;font-weight:500}.ginfo span{font-size:10px;color:var(--t3);display:block;margin-top:1px}.gbadge{margin-left:auto;font-size:10px;color:var(--gold);background:var(--gold-p);border-radius:20px;padding:2px 8px;font-weight:500}
+.txt-b{font-size:13px;color:var(--t2);line-height:1.8}
+.rcursor{display:none}.page-header-strip{display:none}
+</style></head><body>
+<div style="text-align:center;margin-bottom:20px;font-family:var(--ff-d);font-size:18px;color:var(--t1)">${p?p.label:''} · 因为遇见你</div>
+<div class="page-wrap">${cardsHTML}</div>
+</body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`因为遇见你_${p?p.label:'页面'}.html`;
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
+  toast('HTML 文件已导出 ✓');closeM('exp-modal');
+}
+function doScreenshot(){
+  toast('请使用系统截图：Mac ⌘+Shift+4 / Win+Shift+S');
+}
+
+/* ═══════════════════════════════════════════
+   KEYBOARD
+═══════════════════════════════════════════ */
+function setupKeyboard(){
+  document.addEventListener('keydown',e=>{
+    if(e.target.isContentEditable||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+    if((e.key==='Delete'||e.key==='Backspace')&&selCard)delSel();
+    if((e.ctrlKey||e.metaKey)&&e.key==='d'){e.preventDefault();dupSel();}
+    if(e.key==='Escape')selectCard(null);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   MODAL / TOAST
+═══════════════════════════════════════════ */
+function openM(id){
+  document.getElementById(id).classList.add('open');
+  if(id==='exp-modal')buildExportPageSel();
+}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.mov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+});
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+</script>
+</body>
+</html>
