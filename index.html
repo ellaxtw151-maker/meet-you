@@ -7,7 +7,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -18,7 +18,7 @@
   --r-sm:10px;--r-md:14px;--r-lg:22px;
   --sh:0 3px 14px rgba(30,80,160,.1),0 0 0 1px rgba(59,130,214,.12);
   --shf:0 10px 30px rgba(30,80,160,.18),0 0 0 1px rgba(59,130,214,.22);
-  --ff-d:'ZCOOL KuaiLe','Noto Sans SC',cursive;--ff-b:'ZCOOL QingKe HuangYou','Noto Sans SC','PingFang SC',sans-serif;
+  --ff-d:'ZCOOL KuaiLe','KaiTi','STKaiti',cursive;--ff-b:'KaiTi','STKaiti','Noto Serif SC','PingFang SC',serif;
 }
 html,body{font-family:var(--ff-b);height:100vh;overflow:hidden;color:var(--t1);background:var(--bg2)}
 button{cursor:pointer;font-family:var(--ff-b)}
@@ -30,21 +30,24 @@ button{cursor:pointer;font-family:var(--ff-b)}
 .sbox{width:500px;max-width:100%;background:var(--bg1);border-radius:var(--r-lg);border:.5px solid var(--bdrm);box-shadow:var(--shf);padding:32px 28px}
 .slogo{font-family:var(--ff-d);font-size:20px;margin-bottom:4px}.slogo span{color:var(--gold)}
 .ssub{font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:20px}
-.sstep{display:flex;gap:10px;margin-bottom:14px}
-.snum{width:22px;height:22px;border-radius:50%;background:var(--gold);color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.stitle{font-size:13px;font-weight:500;margin-bottom:2px}
-.sdesc{font-size:11px;color:var(--t2);line-height:1.6}
-.sdesc a{color:var(--gold);text-decoration:none}
-.sdiv{height:.5px;background:var(--bdr);margin:16px 0}
 .slabel{font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:5px}
+.schars{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.schar{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px;border-radius:var(--r-md);border:1.5px solid var(--bdrm);background:var(--bg2);cursor:pointer;transition:all .12s}
+.schar:hover{border-color:var(--gold);transform:translateY(-2px)}
+.schar.active{border-color:var(--gold);background:var(--gold-p);box-shadow:0 0 0 2px rgba(245,127,42,.15)}
+.schar-ic{font-size:28px;line-height:1}
+.schar span{font-size:11px;color:var(--t2);font-family:var(--ff-b)}
 .sinp{width:100%;padding:8px 11px;border-radius:var(--r-md);border:.5px solid var(--bdrm);background:var(--bg2);font-size:13px;color:var(--t1);margin-bottom:7px;font-family:var(--ff-b)}
 .sinp:focus{outline:none;border-color:var(--gold)}
-.spaste{width:100%;padding:9px 11px;border-radius:var(--r-md);border:.5px solid var(--bdrm);background:var(--bg2);font-size:11px;color:var(--t2);font-family:monospace;resize:vertical;min-height:90px;margin-bottom:7px}
-.spaste:focus{outline:none;border-color:var(--gold)}
 .sbtn{width:100%;padding:10px;border-radius:var(--r-md);border:none;background:var(--gold);color:#fff;font-size:13px;font-weight:500;margin-top:4px}
 .sbtn:hover{background:#a57850}
 .serr{font-size:11px;color:#c0392b;margin-top:6px;padding:7px 10px;background:#fdf2f2;border-radius:var(--r-sm);display:none}
-.sfree{display:inline-flex;align-items:center;gap:4px;background:#e8f5e9;color:#2e7d32;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500;margin-bottom:14px}
+.sprog{display:none;height:6px;border-radius:6px;background:var(--bg3);overflow:hidden;margin-top:10px}
+.sprog.show{display:block}
+.sprog-bar{height:100%;width:0%;background:var(--gold);border-radius:6px;transition:width .3s ease}
+.sprog-txt{display:none;font-size:11px;color:var(--t2);margin-top:6px;text-align:center}
+.sprog-txt.show{display:block}
+.sbtn:disabled{opacity:.55;cursor:not-allowed}
 
 /* ════ APP ════ */
 #app{display:none;flex-direction:column;height:100vh}
@@ -101,7 +104,7 @@ button{cursor:pointer;font-family:var(--ff-b)}
 .ponline{color:#4caf50;font-size:9px}
 
 /* ════ CANVAS ════ */
-#cwrap{flex:1;overflow:auto;background:var(--bg3);background-image:radial-gradient(circle at 30% 30%,rgba(245,127,42,.14) 3px,transparent 3px),radial-gradient(circle at 70% 70%,rgba(59,130,214,.12) 2px,transparent 2px);background-size:44px 44px;position:relative}
+#cwrap{flex:1;overflow:auto;background:var(--bg3);position:relative}
 #cwrap::-webkit-scrollbar{width:5px;height:5px}
 #cwrap::-webkit-scrollbar-thumb{background:var(--bdrm);border-radius:3px}
 .page-canvas{position:relative;width:1200px;min-height:860px;margin:24px;transform-origin:0 0;display:none}
@@ -129,12 +132,49 @@ button{cursor:pointer;font-family:var(--ff-b)}
 .ctool{width:22px;height:22px;border-radius:4px;border:none;background:transparent;font-size:12px;color:var(--t3);display:flex;align-items:center;justify-content:center;transition:background .1s,color .1s}
 .ctool:hover{background:var(--bg1);color:var(--t1)}
 .ctool.del:hover{color:#c0392b}
-.cbody{padding:13px}
+.cbody{padding:20px 22px}
+.cbody .cbody{padding:0}
 .rh{position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;cursor:se-resize;display:flex;align-items:center;justify-content:center;color:var(--bdrm);background:var(--bg2);border-radius:0 0 var(--r-lg) 0;border-top:.5px solid var(--bdr);border-left:.5px solid var(--bdr)}
 .rh:hover{color:var(--gold)}
 .sh{position:absolute;width:7px;height:7px;background:#fff;border:1.5px solid var(--gold);border-radius:2px;z-index:5;display:none}
 .card.selected .sh{display:block}
-.sh-tl{top:-3px;left:-3px}.sh-tr{top:-3px;right:-3px}.sh-bl{bottom:-3px;left:-3px}.sh-br{bottom:-3px;right:-3px}
+.sh-tl{top:-4px;left:-4px;cursor:nwse-resize}.sh-tr{top:-4px;right:-4px;cursor:nesw-resize}.sh-bl{bottom:-4px;left:-4px;cursor:nesw-resize}.sh-br{bottom:-4px;right:-4px;cursor:nwse-resize}
+.card.selected .sh{width:10px;height:10px}
+
+/* row add / delete (timeline & games) */
+.tl-item,.grow{position:relative}
+.grow{padding-right:20px}
+.grow>.rdel{top:50%;transform:translateY(-50%);right:-4px}
+.rdel{position:absolute;top:2px;right:0;width:18px;height:18px;border-radius:50%;border:none;background:transparent;color:var(--t3);font-size:10px;line-height:1;opacity:0;transition:opacity .12s;padding:0}
+.tl-item:hover>.rdel,.grow:hover>.rdel{opacity:1}
+.rdel:hover{color:#c0392b;background:var(--bg2)}
+.addbar{padding:4px 13px 11px}
+.addbar button{width:100%;padding:5px;border-radius:var(--r-md);border:1px dashed var(--bdrm);background:transparent;font-size:11px;color:var(--t3);transition:all .12s;font-family:var(--ff-b)}
+.addbar button:hover{color:var(--gold);border-color:var(--gold);background:var(--gold-p)}
+
+/* bgm card */
+.bgm-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:.5px solid var(--bdr);position:relative;padding-right:20px}
+.bgm-row:last-child{border-bottom:none}
+.bgm-row i{color:var(--gold);font-size:15px;flex-shrink:0}
+.bgm-name{flex:1;font-size:13px;color:var(--t1)}
+.bgm-row>.rdel{top:50%;transform:translateY(-50%);right:-4px}
+
+/* comments card */
+.cm-list{display:flex;flex-direction:column;gap:9px;min-height:20px}
+.cm-empty{font-size:11px;color:var(--t3);text-align:center;padding:8px 0}
+.cm-item{display:flex;gap:8px;align-items:flex-start}
+.cm-av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0}
+.cm-meta{font-size:9px;color:var(--t3);margin-bottom:2px}
+.cm-txt{font-size:12px;color:var(--t1);line-height:1.6;word-break:break-word}
+.cm-bar{display:flex;gap:5px;padding:0 13px 11px}
+.cm-inp{flex:1;min-width:0;padding:6px 9px;border-radius:var(--r-md);border:1px solid var(--bdrm);background:var(--bg2);font-size:12px;color:var(--t1);font-family:var(--ff-b)}
+.cm-inp:focus{outline:none;border-color:var(--gold)}
+.cm-bar button{padding:6px 11px;border-radius:var(--r-md);border:none;background:var(--gold);color:#fff;font-size:11px;flex-shrink:0}
+
+/* collapsible right-panel sections */
+.rplabel.rpc{cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.rplabel.rpc:hover{color:var(--gold)}
+.rplabel.rpc i{font-size:12px}
 
 /* card content */
 .hero-t{font-family:var(--ff-d);font-size:28px;font-weight:300;line-height:1.25;letter-spacing:.04em}
@@ -171,9 +211,12 @@ button{cursor:pointer;font-family:var(--ff-b)}
 .pa{width:100%;min-height:150px;background:var(--bg2);border-radius:0 0 var(--r-lg) var(--r-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--t3);font-size:12px;cursor:pointer;transition:background .15s;position:relative;overflow:hidden}
 .pa:hover{background:var(--gold-p)}
 .pa i{font-size:22px;color:var(--gold-l)}
-.pa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.pa-ov{position:absolute;inset:0;background:rgba(185,140,94,.7);display:none;align-items:center;justify-content:center;color:#fff;font-size:12px;gap:5px}
+.pa img,.pa video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pa-ov{position:absolute;inset:0;background:rgba(20,20,20,.45);display:none;align-items:center;justify-content:center;color:#fff;font-size:12px;gap:8px;z-index:2}
 .pa:hover .pa-ov{display:flex}
+.pa-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:20px;border:none;background:rgba(255,255,255,.92);color:var(--t1);font-size:11px;font-weight:500;cursor:pointer}
+.pa-btn:hover{background:#fff}
+.pa-btn-del:hover{color:#c0392b}
 .spin{width:20px;height:20px;border:2px solid var(--gold-l);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -190,11 +233,18 @@ button{cursor:pointer;font-family:var(--ff-b)}
 .pg-photo:hover .pg-photo-info{opacity:1}
 .pg-photo-name{font-size:11px;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pg-dl-btn{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.9);color:var(--t1);font-size:11px;font-weight:500;cursor:pointer;border:none;text-decoration:none}
+.pg-del-btn{cursor:pointer}
+.pg-del-btn:hover{color:#c0392b}
 .pg-empty{text-align:center;padding:60px 20px;color:var(--t3)}
 .pg-empty i{font-size:40px;color:var(--gold-l);display:block;margin-bottom:12px}
 
 /* ════ RIGHT PANEL ════ */
-#rp{width:200px;flex-shrink:0;background:var(--bg1);border-left:.5px solid var(--bdr);overflow-y:auto;padding:12px 11px;display:flex;flex-direction:column;gap:12px}
+#rp{width:200px;flex-shrink:0;background:var(--bg1);border-left:.5px solid var(--bdr);overflow-y:auto;padding:12px 11px;display:flex;flex-direction:column;gap:12px;transition:width .18s,padding .18s}
+#rp.collapsed{width:0;padding:12px 0;overflow:hidden;border-left:none}
+#rp-collapse-btn{position:relative;flex-shrink:0;width:16px;align-self:stretch;border:none;border-left:.5px solid var(--bdr);background:var(--bg2);color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;transition:background .12s}
+#rp-collapse-btn:hover{background:var(--gold-p);color:var(--gold)}
+#rp-collapse-btn i{transition:transform .18s;font-size:11px}
+#rp-collapse-btn.collapsed i{transform:rotate(180deg)}
 #rp::-webkit-scrollbar{width:3px}
 #rp::-webkit-scrollbar-thumb{background:var(--bdrm);border-radius:3px}
 .rplabel{font-size:9px;font-weight:600;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:7px}
@@ -241,8 +291,8 @@ button{cursor:pointer;font-family:var(--ff-b)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* preview */
-body.preview .chdr,.preview .rh,.preview .sh{display:none!important}
-body.preview #sb,body.preview #rp,body.preview #zbar{display:none!important}
+body.preview .chdr,.preview .rh,.preview .sh,.preview .addbar,.preview .cm-bar,.preview .rdel{display:none!important}
+body.preview #sb,body.preview #rp,body.preview #rp-collapse-btn,body.preview #zbar{display:none!important}
 body.preview #cwrap{flex:1}
 body.preview .page-header-strip{display:none}
 </style>
@@ -253,19 +303,19 @@ body.preview .page-header-strip{display:none}
 <div id="setup">
 <div class="sbox">
   <div class="slogo">🦊 因为遇见你 🐰 <span>· 协作策划站</span></div>
-  <div class="ssub">连接 Firebase Realtime Database，把 HTML 发给朋友粘贴同一份配置，即可实时协作，照片可互相上传下载。</div>
-  <div class="sfree"><i class="ti ti-check" style="font-size:12px"></i> 完全免费 · 无需 Storage</div>
-  <div class="sstep"><div class="snum">1</div><div><div class="stitle">新建 Firebase 项目</div><div class="sdesc">前往 <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Create a project（关闭 Analytics）</div></div></div>
-  <div class="sstep"><div class="snum">2</div><div><div class="stitle">创建 Realtime Database</div><div class="sdesc">左侧 Build → Realtime Database → Create database → <b>Start in test mode</b> → Enable</div></div></div>
-  <div class="sstep"><div class="snum">3</div><div><div class="stitle">获取配置</div><div class="sdesc">⚙️ Project settings → Your apps → 点 &lt;/&gt; → Register app → 选 <b>Use a &lt;script&gt; tag</b> → 复制 firebaseConfig 对象粘贴到下方</div></div></div>
-  <div class="sdiv"></div>
-  <div class="slabel">粘贴 firebaseConfig</div>
-  <textarea class="spaste" id="fb-json" placeholder='{ "apiKey": "...", "authDomain": "...", "databaseURL": "https://xxx.firebaseio.com", "projectId": "...", ... }'></textarea>
+  <div class="ssub">选一个角色，或输入你的名字，点击下方按钮即可开始实时协作编辑。</div>
+  <div class="slabel">选择你的角色</div>
+  <div class="schars" id="schars">
+    <div class="schar" data-name="尼克 Nick" data-color="#f57f2a" onclick="pickChar(this)"><div class="schar-ic">🦊</div><span>尼克狐狸</span></div>
+    <div class="schar" data-name="朱迪 Judy" data-color="#3b82d6" onclick="pickChar(this)"><div class="schar-ic">🐰</div><span>朱迪兔子</span></div>
+    <div class="schar" data-name="豹子警官" data-color="#43a86f" onclick="pickChar(this)"><div class="schar-ic">🐆</div><span>豹子警官</span></div>
+  </div>
   <div class="slabel">你的名字</div>
   <input class="sinp" id="my-name" placeholder="例如：小婕" maxlength="12" style="margin-bottom:0">
+  <div class="sprog" id="sprog"><div class="sprog-bar" id="sprog-bar"></div></div>
+  <div class="sprog-txt" id="sprog-txt"></div>
   <div class="serr" id="serr"></div>
-  <button class="sbtn" onclick="initFB()"><i class="ti ti-rocket" style="vertical-align:-2px;margin-right:4px"></i>连接并开始编辑</button>
-  <div style="font-size:10px;color:var(--t3);margin-top:10px;line-height:1.6">配置仅存在你的浏览器本地。把此 HTML 文件发给朋友，让他们粘贴同一份配置即可协作。</div>
+  <button class="sbtn" id="sbtn" onclick="initFB()"><i class="ti ti-rocket" style="vertical-align:-2px;margin-right:4px"></i>连接并开始编辑</button>
 </div>
 </div>
 
@@ -278,6 +328,9 @@ body.preview .page-header-strip{display:none}
   <div class="sst"><div class="ssdot" id="ssdot"></div><span id="sstxt">已同步</span></div>
   <div style="display:flex;align-items:center;gap:8px">
     <div class="cstack" id="cstack"></div>
+    <button class="tbtn" onclick="undo()" title="撤销 (Ctrl+Z)"><i class="ti ti-arrow-back-up"></i></button>
+    <button class="tbtn" onclick="redo()" title="恢复 (Ctrl+Shift+Z)"><i class="ti ti-arrow-forward-up"></i></button>
+    <button class="tbtn" onclick="saveAll()"><i class="ti ti-device-floppy"></i> 保存</button>
     <button class="tbtn" onclick="openM('inv-modal')"><i class="ti ti-user-plus"></i> 邀请</button>
     <button class="tbtn" onclick="openM('exp-modal')"><i class="ti ti-download"></i> 导出</button>
     <button class="tbtn gold" onclick="togglePreview()"><i class="ti ti-eye"></i> 预览</button>
@@ -303,17 +356,20 @@ body.preview .page-header-strip{display:none}
 </div>
 
 <!-- RIGHT PANEL -->
+<button id="rp-collapse-btn" onclick="toggleRP()" title="收起/展开面板"><i class="ti ti-chevron-right"></i></button>
 <div id="rp">
   <div>
-    <div class="rplabel">选中模块</div>
+    <div class="rplabel rpc" onclick="rpToggle(this)">选中模块 <i class="ti ti-chevron-down"></i></div>
+    <div class="rpsec">
     <div style="margin-bottom:7px"><div class="rfi">标签名</div><input class="rpi" id="rp-tag" placeholder="—" oninput="rpTag(this.value)"></div>
     <div style="margin-bottom:7px"><div class="rfi">X / Y</div><div class="rpsplit"><input class="rpi" id="rp-x" type="number" placeholder="X" oninput="rpPos()"><input class="rpi" id="rp-y" type="number" placeholder="Y" oninput="rpPos()"></div></div>
     <div style="margin-bottom:7px"><div class="rfi">W / H</div><div class="rpsplit"><input class="rpi" id="rp-w" type="number" placeholder="W" oninput="rpSize()"><input class="rpi" id="rp-h" type="number" placeholder="H" oninput="rpSize()"></div></div>
+    </div>
   </div>
   <div class="rpdiv"></div>
   <div>
-    <div class="rplabel">主题色</div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap">
+    <div class="rplabel rpc" onclick="rpToggle(this)">主题色 <i class="ti ti-chevron-down"></i></div>
+    <div class="rpsec" style="display:flex;gap:5px;flex-wrap:wrap">
       <div class="csw active" style="background:#f57f2a" data-c="#f57f2a" onclick="setTheme(this)"></div>
       <div class="csw" style="background:#3b82d6" data-c="#3b82d6" onclick="setTheme(this)"></div>
       <div class="csw" style="background:#43a86f" data-c="#43a86f" onclick="setTheme(this)"></div>
@@ -353,13 +409,12 @@ body.preview .page-header-strip{display:none}
   <div class="modal">
     <button class="mcls" onclick="closeM('inv-modal')"><i class="ti ti-x" style="font-size:11px"></i></button>
     <div class="mt">邀请协作者</div>
-    <div class="ms">把这个 HTML 文件发给朋友，让他们粘贴同一份 Firebase 配置，填写名字后连接，即可实时协作编辑。</div>
+    <div class="ms">把网站链接发给朋友，填写名字后点击连接，即可实时协作编辑。</div>
     <div style="background:var(--bg2);border-radius:var(--r-md);padding:12px;font-size:12px;color:var(--t2);line-height:1.9;margin-bottom:14px">
       <b style="font-weight:500;color:var(--t1)">步骤</b><br>
-      1. 把此 HTML 文件通过微信 / 邮件发给朋友<br>
-      2. 朋友打开 → 粘贴<b>同一份</b> firebaseConfig<br>
-      3. 填写名字 → 点击连接<br>
-      4. 所有编辑实时同步 ✓　照片互相可下载 ✓
+      1. 把网站链接通过微信 / 邮件发给朋友<br>
+      2. 朋友打开 → 填写名字 → 点击连接<br>
+      3. 所有编辑实时同步 ✓　照片互相可下载 ✓
     </div>
     <button class="tbtn gold" style="width:100%" onclick="closeM('inv-modal')"><i class="ti ti-check"></i> 好的</button>
   </div>
@@ -430,48 +485,110 @@ let db, myId, myName, myColor;
 let zoom=1, selCard=null, ziMax=10;
 let dragType=null, curPage='p0';
 const localCards={}; // pageId_cardId -> el
+const lastData={};   // pageId_cardId -> last known card data (for undo)
+const undoStack=[],redoStack=[];
 let ignoreRemote=false;
 const COLORS=['#b98c5e','#4a9e5c','#5a6eb9','#b95e8a','#5e9eb9','#9e9a4a'];
 const saveTimers={};
+let pendingWrites=0; // set() calls not yet acknowledged by the server
 
 /* ═══════════════════════════════════════════
    SETUP
 ═══════════════════════════════════════════ */
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyBCpI3E3kOipSh2Hdq69ZeqSClXlWHQEZs",
+  authDomain:"with-you-7bded.firebaseapp.com",
+  databaseURL:"https://with-you-7bded-default-rtdb.firebaseio.com",
+  projectId:"with-you-7bded",
+  storageBucket:"with-you-7bded.firebasestorage.app",
+  messagingSenderId:"718802533697",
+  appId:"1:718802533697:web:69e6adb5ceb553b9a335c0",
+  measurementId:"G-SQMHKJTNKW"
+};
+let pickedCharColor=null;
+function pickChar(el){
+  document.querySelectorAll('.schar').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  pickedCharColor=el.dataset.color;
+  document.getElementById('my-name').value=el.dataset.name;
+}
 window.addEventListener('load',()=>{
-  const s=localStorage.getItem('fb_cfg_v3');
-  if(s){try{const c=JSON.parse(s);myName=localStorage.getItem('my_name')||'协作者';myColor=localStorage.getItem('my_color')||COLORS[0];myId='u_'+Math.random().toString(36).slice(2,8);connectFB(c);}catch(e){}}
+  const n=localStorage.getItem('my_name');
+  if(n)document.getElementById('my-name').value=n;
 });
 function initFB(){
-  let raw=document.getElementById('fb-json').value.trim();
-  raw=raw.replace(/^const\s+firebaseConfig\s*=\s*/,'').replace(/;$/,'').trim();
-  raw=raw.replace(/([{,]\s*)(\w+)\s*:/g,'$1"$2":').replace(/'/g,'"');
-  let cfg;
-  try{cfg=JSON.parse(raw);}catch(e){showErr('配置格式有误，请检查花括号 { } 内内容是否完整');return;}
-  if(!cfg.databaseURL){showErr('缺少 databaseURL，请确认已创建 Realtime Database');return;}
   myName=document.getElementById('my-name').value.trim()||'协作者';
   myId='u_'+Math.random().toString(36).slice(2,8);
-  myColor=COLORS[Math.floor(Math.random()*COLORS.length)];
-  localStorage.setItem('fb_cfg_v3',JSON.stringify(cfg));
+  myColor=pickedCharColor||localStorage.getItem('my_color')||COLORS[Math.floor(Math.random()*COLORS.length)];
   localStorage.setItem('my_name',myName);
   localStorage.setItem('my_color',myColor);
-  connectFB(cfg);
+  connectFB(FIREBASE_CONFIG);
 }
-let connTimer;
+let connTimer,connProgTimer;
+const CONN_STAGES=[
+  {pct:12,txt:'正在初始化 Firebase…'},
+  {pct:35,txt:'正在建立实时连接…'},
+  {pct:65,txt:'正在验证数据库权限…'},
+  {pct:88,txt:'马上就好…'},
+];
+const CONN_TIMEOUT=15000;
+function startProgress(){
+  document.getElementById('sbtn').disabled=true;
+  document.getElementById('serr').style.display='none';
+  const bar=document.getElementById('sprog-bar'),txt=document.getElementById('sprog-txt');
+  document.getElementById('sprog').classList.add('show');
+  txt.classList.add('show');
+  bar.style.background='var(--gold)';
+  const start=Date.now();
+  clearInterval(connProgTimer);
+  connProgTimer=setInterval(()=>{
+    const elapsed=Date.now()-start;
+    let stage=CONN_STAGES[0];
+    CONN_STAGES.forEach((s,i)=>{if(elapsed>i*(CONN_TIMEOUT/CONN_STAGES.length))stage=s;});
+    bar.style.width=stage.pct+'%';
+    txt.textContent=stage.txt;
+  },250);
+}
+function stopProgress(ok){
+  clearInterval(connProgTimer);
+  const bar=document.getElementById('sprog-bar');
+  document.getElementById('sbtn').disabled=false;
+  if(ok){
+    bar.style.width='100%';
+    setTimeout(()=>{document.getElementById('sprog').classList.remove('show');document.getElementById('sprog-txt').classList.remove('show');bar.style.width='0%';},350);
+  }else{
+    bar.style.background='#c0392b';bar.style.width='100%';
+    setTimeout(()=>{document.getElementById('sprog').classList.remove('show');document.getElementById('sprog-txt').classList.remove('show');bar.style.width='0%';bar.style.background='var(--gold)';},600);
+  }
+}
 function connectFB(cfg){
   clearTimeout(connTimer);
-  document.getElementById('serr').style.display='none';
+  startProgress();
   try{if(!firebase.apps.length)firebase.initializeApp(cfg);db=firebase.database();}
-  catch(e){showErr('Firebase 初始化失败：'+e.message);return;}
+  catch(e){stopProgress(false);showErr('Firebase 初始化失败：'+e.message);return;}
   db.ref('.info/connected').on('value',snap=>{
     if(snap.val()){
       clearTimeout(connTimer);
+      stopProgress(true);
       document.getElementById('serr').style.display='none';
       document.getElementById('setup').style.display='none';
       document.getElementById('app').classList.add('ready');
       if(!window._appStarted){window._appStarted=true;startApp();}
     }
   });
-  connTimer=setTimeout(()=>{if(!document.getElementById('app').classList.contains('ready'))showErr('连接超时，请检查 databaseURL 和数据库规则（需 test mode）');},8000);
+  // 15s: not an error yet — network may just be slow; keep waiting
+  connTimer=setTimeout(()=>{
+    if(document.getElementById('app').classList.contains('ready'))return;
+    clearInterval(connProgTimer);
+    document.getElementById('sprog-txt').textContent='网络有点慢，仍在连接中，请稍候…';
+    // 45s total: give up for real, but listener stays on — connected later still enters
+    connTimer=setTimeout(()=>{
+      if(!document.getElementById('app').classList.contains('ready')){
+        stopProgress(false);
+        showErr('连接失败，请检查网络后重试');
+      }
+    },30000);
+  },CONN_TIMEOUT);
 }
 function showErr(m){const e=document.getElementById('serr');e.textContent=m;e.style.display='block';}
 
@@ -578,6 +695,8 @@ function buildSidebar(pid){
     <div class="bchip" draggable="true" ondragstart="ds(event,'invite')"><i class="ti ti-mail-heart"></i><div><div>邀请函</div><small>含二维码</small></div></div>
     <div class="bchip" draggable="true" ondragstart="ds(event,'games')"><i class="ti ti-puzzle"></i><div><div>游戏区</div><small>四大打卡站</small></div></div>
     <div class="bchip" draggable="true" ondragstart="ds(event,'text')"><i class="ti ti-align-left"></i><div><div>文字块</div><small>自由文字</small></div></div>
+    <div class="bchip" draggable="true" ondragstart="ds(event,'comments')"><i class="ti ti-message-circle"></i><div><div>留言板</div><small>协作者评论</small></div></div>
+    <div class="bchip" draggable="true" ondragstart="ds(event,'bgm')"><i class="ti ti-music"></i><div><div>BGM</div><small>歌单曲目</small></div></div>
     <div style="margin-top:16px">
       <div class="sblabel">在线协作者</div>
       <div id="presence-list-p"></div>
@@ -654,45 +773,114 @@ function listenAllCards(){
       const canvas=document.querySelector(`.page-canvas[data-page="${p.id}"]`);if(!canvas)return;
       // remove deleted
       Object.keys(localCards).filter(k=>k.startsWith(p.id+'_')).forEach(k=>{
-        if(!data[k.slice(p.id.length+1)]){localCards[k].remove();delete localCards[k];}
+        if(!data[k.slice(p.id.length+1)]){localCards[k].remove();delete localCards[k];delete lastData[k];}
       });
       Object.entries(data).forEach(([cid,cd])=>{
         const key=p.id+'_'+cid;
         if(localCards[key])remoteUpdate(localCards[key],cd);
         else{const el=buildCard(cid,cd,p.id);canvas.appendChild(el);localCards[key]=el;}
+        lastData[key]=cd;
       });
     });
   });
 }
+// strip locally-injected controls before comparing local vs remote body
+function normBody(s){return (s||'').replace(/<button class="rdel"[^>]*>✕<\/button>/g,'');}
 function remoteUpdate(el,cd){
-  if(el!==selCard){
+  const key=el.dataset.pid+'_'+el.dataset.id;
+  // local edits are pending save — do NOT overwrite them with older remote data
+  if(saveTimers[key])return;
+  if(!(el===selCard&&window._dragging)){
     el.style.left=(cd.x||0)+'px';el.style.top=(cd.y||0)+'px';
     if(cd.w)el.style.width=cd.w+'px';if(cd.h)el.style.minHeight=cd.h+'px';
     if(cd.zi)el.style.zIndex=cd.zi;
   }
   if(cd.body&&!el.querySelector('[contenteditable]:focus')){
-    const b=el.querySelector('.cbody,.pa,.inv-body');if(b&&b.innerHTML!==cd.body)b.innerHTML=cd.body;
+    const b=el.querySelector('.cbody,.pa,.inv-body');
+    if(b&&normBody(b.innerHTML)!==normBody(cd.body)){
+      b.innerHTML=cd.body;injectRowDels(el);
+      if(el.dataset.type==='photo'&&b.querySelector('img,video'))b.onclick=null;
+    }
   }
   if(cd.tag){const t=el.querySelector('.ctag');if(t)t.textContent=cd.tag;}
 }
 function saveCard(pid,cid){
   const key=pid+'_'+cid;const el=localCards[key];if(!el)return;
+  clearTimeout(saveTimers[key]);delete saveTimers[key];
   const tag=el.querySelector('.ctag');const body=el.querySelector('.cbody,.pa,.inv-body');
-  setSaving(true);ignoreRemote=true;
-  db.ref('cards/'+pid+'/'+cid).set({
+  if(!body){console.warn('saveCard: no body container, skip',key);return;}
+  const data={
     x:parseInt(el.style.left)||0,y:parseInt(el.style.top)||0,
     w:el.offsetWidth,h:el.offsetHeight,zi:parseInt(el.style.zIndex)||1,
-    tag:tag?tag.textContent:'',body:body?body.innerHTML:'',
+    tag:tag?tag.textContent:'',body:body.innerHTML,
     type:el.dataset.type||'text',by:myName,t:Date.now()
-  }).then(()=>{ignoreRemote=false;setSaving(false);});
+  };
+  recordUndo(pid,cid,lastData[key],data);
+  lastData[key]=data;
+  pendingWrites++;setSaving(true);ignoreRemote=true;
+  db.ref('cards/'+pid+'/'+cid).set(data).then(()=>{
+    ignoreRemote=false;
+    pendingWrites=Math.max(0,pendingWrites-1);
+    if(pendingWrites===0)setSaving(false);
+  });
+}
+// coalesce rapid saves of the same card (e.g. during a drag) into one undo step
+function recordUndo(pid,cid,prev,next){
+  if(prev===undefined)return;
+  const top=undoStack[undoStack.length-1];
+  if(top&&top.pid===pid&&top.cid===cid&&Date.now()-top.at<1200){top.next=next;top.at=Date.now();}
+  else{undoStack.push({pid,cid,prev,next,at:Date.now()});if(undoStack.length>60)undoStack.shift();}
+  redoStack.length=0;
+}
+function applyOp(pid,cid,data){
+  const key=pid+'_'+cid;
+  clearTimeout(saveTimers[key]);delete saveTimers[key];
+  if(data){lastData[key]=data;db.ref('cards/'+pid+'/'+cid).set(data);}
+  else{delete lastData[key];db.ref('cards/'+pid+'/'+cid).remove();}
+}
+function undo(){
+  const op=undoStack.pop();
+  if(!op){toast('没有可撤销的操作');return;}
+  redoStack.push(op);
+  applyOp(op.pid,op.cid,op.prev||null);
+  toast('已撤销 ↶');
+}
+function redo(){
+  const op=redoStack.pop();
+  if(!op){toast('没有可恢复的操作');return;}
+  undoStack.push(op);
+  applyOp(op.pid,op.cid,op.next||null);
+  toast('已恢复 ↷');
+}
+function saveAll(){
+  let n=0;
+  Object.keys(localCards).forEach(k=>{
+    const i=k.indexOf('_');
+    saveCard(k.slice(0,i),k.slice(i+1));n++;
+  });
+  toast(`已手动保存 ${n} 个模块 ✓`);
 }
 function scheduleSave(pid,cid,d=500){
-  const k=pid+'_'+cid;clearTimeout(saveTimers[k]);saveTimers[k]=setTimeout(()=>saveCard(pid,cid),d);
+  const k=pid+'_'+cid;clearTimeout(saveTimers[k]);
+  saveTimers[k]=setTimeout(()=>{delete saveTimers[k];saveCard(pid,cid);},d);
 }
 function setSaving(on){
   document.getElementById('ssdot').classList.toggle('saving',on);
   document.getElementById('sstxt').textContent=on?'同步中…':'已同步 ✓';
 }
+// flush pending debounced saves immediately when the tab is hidden/closed
+function flushPendingSaves(){
+  Object.keys(saveTimers).forEach(k=>{const i=k.indexOf('_');saveCard(k.slice(0,i),k.slice(i+1));});
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flushPendingSaves();});
+// block accidental close/refresh while writes are still in flight (slow network!)
+window.addEventListener('beforeunload',e=>{
+  flushPendingSaves();
+  if(pendingWrites>0){
+    e.preventDefault();
+    e.returnValue='还有内容正在同步到云端，确定要离开吗？';
+  }
+});
 
 /* ═══════════════════════════════════════════
    BUILD CARD ELEMENT
@@ -703,27 +891,51 @@ function buildCard(cid,cd,pid){
   el.style.left=(cd.x||0)+'px';el.style.top=(cd.y||0)+'px';
   if(cd.w)el.style.width=cd.w+'px';if(cd.h)el.style.minHeight=cd.h+'px';
   el.style.zIndex=cd.zi||1;
-  const handles='<div class="sh sh-tl"></div><div class="sh sh-tr"></div><div class="sh sh-bl"></div><div class="sh sh-br"></div>';
-  const rh='<div class="rh" onmousedown="startResize(event)"><i class="ti ti-arrows-diagonal" style="font-size:9px"></i></div>';
+  const handles='<div class="sh sh-tl" onmousedown="startResizeC(event,\'tl\')"></div><div class="sh sh-tr" onmousedown="startResizeC(event,\'tr\')"></div><div class="sh sh-bl" onmousedown="startResizeC(event,\'bl\')"></div><div class="sh sh-br" onmousedown="startResizeC(event,\'br\')"></div>';
+  const rh='<div class="rh" onmousedown="startResizeC(event,\'br\')"><i class="ti ti-arrows-diagonal" style="font-size:9px"></i></div>';
   const tools=`<div class="ctools"><button class="ctool" onclick="dupCard(this)"><i class="ti ti-copy"></i></button><button class="ctool del" onclick="rmCard(this)"><i class="ti ti-trash"></i></button></div>`;
-  const body=cd.body||defaultBody(cd.type,pid);
-  el.innerHTML=`<div class="chdr" onmousedown="startDrag(event)"><span class="ctag">${cd.tag||typeLabel(cd.type)}</span>${tools}</div>${body}${rh}${handles}`;
+  let body=cd.body||defaultBody(cd.type,pid);
+  if(cd.body&&!/^\s*<div class="(cbody|pa|inv-body)/.test(cd.body)){
+    // stored body is inner content — restore the wrapper lost by saveCard
+    body=cd.type==='photo'?`<div class="pa" style="min-height:150px">${cd.body}</div>`
+        :cd.type==='invite'?`<div class="inv-body">${cd.body}</div>`
+        :`<div class="cbody">${cd.body}</div>`;
+  }
+  let extra='';
+  if(cd.type==='timeline')extra='<div class="addbar"><button onclick="tlAddRow(this)">＋ 添加章节</button></div>';
+  if(cd.type==='games')extra='<div class="addbar"><button onclick="gAddRow(this)">＋ 添加游戏</button></div>';
+  if(cd.type==='bgm')extra='<div class="addbar"><button onclick="bgmAddRow(this)">＋ 添加歌曲</button></div>';
+  if(cd.type==='comments')extra='<div class="cm-bar"><input class="cm-inp" placeholder="写下你的想法…" onkeydown="if(event.key===\'Enter\')cmAdd(this)"><button onclick="cmAdd(this.previousElementSibling)">发送</button></div>';
+  el.innerHTML=`<div class="chdr" onmousedown="startDrag(event)"><span class="ctag">${cd.tag||typeLabel(cd.type)}</span>${tools}</div>${body}${extra}${rh}${handles}`;
+  injectRowDels(el);
   el.addEventListener('focusout',e=>{if(e.target.isContentEditable)scheduleSave(pid,cid);});
   el.addEventListener('mousedown',()=>selectCard(el));
-  if(cd.type==='photo'){const pa=el.querySelector('.pa');if(pa)pa.onclick=()=>triggerPhotoCard(el,pid,cid);}
+  if(cd.type==='photo'){const pa=el.querySelector('.pa');if(pa&&!pa.querySelector('img,video'))pa.onclick=()=>triggerPhotoCard(el,pid,cid);}
   return el;
 }
-function typeLabel(t){return{hero:'主标题',part:'章节标题',photo:'照片',timeline:'时间轴',invite:'邀请函',games:'游戏区',text:'文字块'}[t]||'模块';}
+function injectRowDels(el){
+  if(!['timeline','games','bgm'].includes(el.dataset.type))return;
+  el.querySelectorAll('.tl-item,.grow,.bgm-row').forEach(r=>{
+    if(!r.querySelector('.rdel')){
+      const b=document.createElement('button');b.className='rdel';b.textContent='✕';
+      b.setAttribute('onclick','rowDel(this)');b.setAttribute('contenteditable','false');
+      r.appendChild(b);
+    }
+  });
+}
+function typeLabel(t){return{hero:'主标题',part:'章节标题',photo:'照片',timeline:'时间轴',invite:'邀请函',games:'游戏区',text:'文字块',comments:'留言板',bgm:'BGM'}[t]||'模块';}
 function defaultBody(type,pid){
   const p=PAGES.find(x=>x.id===pid)||{};
   const cb=s=>`<div class="cbody">${s}</div>`;
   switch(type){
     case 'hero':return cb(`<div class="hero-t" contenteditable="true">因为遇见你</div><div class="gline"></div><div class="hero-s" contenteditable="true">一场关于相遇、陪伴与新生的庆典<br>婚礼 × 宝宝一周岁</div><div class="hero-d" contenteditable="true">二〇二五年 · 秋 · 某个幸福的日子</div>`);
     case 'part':return cb(`<div class="part-en" contenteditable="true">${p.label||'PART I.'}</div><div class="part-t" contenteditable="true">${p.desc||'章节名称'}</div><div class="gline"></div><div class="part-desc" contenteditable="true">点击这里填写本章节说明……</div>`);
-    case 'photo':return`<div class="pa" style="min-height:150px"><i class="ti ti-photo-heart"></i><span>点击上传照片</span><small style="font-size:10px">自动压缩 · 实时同步</small><div class="pa-ov"><i class="ti ti-camera" style="font-size:16px"></i> 更换</div></div>`;
+    case 'photo':return`<div class="pa" style="min-height:150px"><i class="ti ti-photo-heart"></i><span>点击上传照片 / 视频</span><small style="font-size:10px">自动压缩 · 实时同步</small></div>`;
     case 'timeline':return cb(`<div class="tl-item"><div class="tll"><div class="tldot"></div><div class="tlline"></div></div><div><div class="tlch" contenteditable="true">CHAPTER 01</div><div class="tln" contenteditable="true">那年相遇</div><div class="tld" contenteditable="true">两个人的故事，从某一个平凡的瞬间开始……</div></div></div><div class="tl-item"><div class="tll"><div class="tldot"></div><div class="tlline"></div></div><div><div class="tlch" contenteditable="true">CHAPTER 02</div><div class="tln" contenteditable="true">因你而来</div><div class="tld" contenteditable="true">慢慢发现你就是那个人……</div></div></div><div class="tl-item"><div class="tll"><div class="tldot"></div><div class="tlline"></div></div><div><div class="tlch" contenteditable="true">CHAPTER 03</div><div class="tln" contenteditable="true">执手相伴</div><div class="tld" contenteditable="true">「我愿意」两个字，改变了所有……</div></div></div><div class="tl-item"><div class="tll"><div class="tldot"></div></div><div><div class="tlch" contenteditable="true">CHAPTER 04</div><div class="tln" contenteditable="true">因你降临</div><div class="tld" contenteditable="true">小小的你让故事有了最美的续集……</div></div></div>`);
     case 'invite':return`<div class="inv-body"><div class="inv-en">WEDDING INVITATION</div><div class="inv-t" contenteditable="true">婚礼邀请函</div><div class="inv-hr"></div><div class="inv-info" contenteditable="true">📅 2025年某月某日 星期六<br>⏰ 中午 11:30 入场<br>📍 某城市 · 某宴会厅<br>🎂 宝宝一周岁 同庆</div><div class="inv-qr"><i class="ti ti-qrcode"></i></div></div>`;
     case 'games':return cb(`<div style="font-size:10px;color:var(--t3);margin-bottom:9px;letter-spacing:.06em">四大打卡站 · 顺时针轮换</div><div class="grow"><div class="gnum">01</div><div class="ginfo"><p contenteditable="true">那年相遇</p><span contenteditable="true">寻找彼此的第一张合照</span></div><div class="gbadge">+3分</div></div><div class="grow"><div class="gnum">02</div><div class="ginfo"><p contenteditable="true">因你而来</p><span contenteditable="true">写下你们最爱去的地方</span></div><div class="gbadge">+3分</div></div><div class="grow"><div class="gnum">03</div><div class="ginfo"><p contenteditable="true">执手相伴</p><span contenteditable="true">亲手为婚纱与宝宝礼服添上心意</span></div><div class="gbadge">+5分</div></div><div class="grow"><div class="gnum">04</div><div class="ginfo"><p contenteditable="true">因你降临</p><span contenteditable="true">许下对宝宝的第一个祝福</span></div><div class="gbadge">+3分</div></div>`);
+    case 'comments':return cb(`<div class="cm-list"><div class="cm-empty">还没有留言，来抢沙发 🛋️</div></div>`);
+    case 'bgm':return cb(`<div class="bgm-row"><i class="ti ti-music"></i><div class="bgm-name" contenteditable="true">点击输入歌曲名称…</div></div><div class="bgm-row"><i class="ti ti-music"></i><div class="bgm-name" contenteditable="true">点击输入歌曲名称…</div></div>`);
     default:return cb(`<div class="txt-b" contenteditable="true">点击这里输入内容……</div>`);
   }
 }
@@ -761,16 +973,37 @@ function initDefaultCards(){
 /* ═══════════════════════════════════════════
    PHOTO CARD (base64 in DB)
 ═══════════════════════════════════════════ */
+function paFilled(card,pid,cid,mediaHTML){
+  const pa=card.querySelector('.pa');
+  pa.innerHTML=`${mediaHTML}<div class="pa-ov"><button class="pa-btn" onclick="event.stopPropagation();triggerPhotoCard(this.closest('.card'),'${pid}','${cid}')"><i class="ti ti-camera" style="font-size:14px"></i> 更换</button><button class="pa-btn pa-btn-del" onclick="event.stopPropagation();delPhotoCard(this.closest('.card'),'${pid}','${cid}')"><i class="ti ti-trash" style="font-size:14px"></i> 删除</button></div>`;
+  pa.onclick=null;
+}
+function delPhotoCard(card,pid,cid){
+  const pa=card.querySelector('.pa');
+  pa.innerHTML=`<i class="ti ti-photo-heart"></i><span>点击上传照片 / 视频</span><small style="font-size:10px">自动压缩 · 实时同步</small>`;
+  pa.onclick=()=>triggerPhotoCard(card,pid,cid);
+  saveCard(pid,cid);toast('已删除');
+}
 function triggerPhotoCard(card,pid,cid){
-  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.style.display='none';
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*,video/*';inp.style.display='none';
   inp.onchange=e=>{
     const file=e.target.files[0];if(!file)return;
-    if(file.size>8*1024*1024){toast('图片超过 8MB，请压缩后上传');return;}
     const pa=card.querySelector('.pa');
+    if(file.type.startsWith('video/')){
+      if(file.size>8*1024*1024){toast('视频超过 8MB，请压缩后上传');return;}
+      pa.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="spin"></div><span style="font-size:11px;color:var(--t2)">处理中…</span></div>';
+      const r=new FileReader();
+      r.onload=ev=>{
+        paFilled(card,pid,cid,`<video src="${ev.target.result}" controls></video>`);
+        saveCard(pid,cid);toast('视频已同步 ✓');
+      };
+      r.readAsDataURL(file);
+      return;
+    }
+    if(file.size>8*1024*1024){toast('图片超过 8MB，请压缩后上传');return;}
     pa.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="spin"></div><span style="font-size:11px;color:var(--t2)">处理中…</span></div>';
     compressImg(file,900,900,0.75,(dataUrl,sz)=>{
-      pa.innerHTML=`<img src="${dataUrl}"><div class="pa-ov"><i class="ti ti-camera" style="font-size:16px"></i> 更换</div>`;
-      pa.onclick=()=>triggerPhotoCard(card,pid,cid);
+      paFilled(card,pid,cid,`<img src="${dataUrl}">`);
       saveCard(pid,cid);toast(`照片已同步（${sz}）✓`);
     });
   };
@@ -813,11 +1046,18 @@ function renderPhotoGallery(photos){
         <div class="pg-photo-name">${ph.name||'照片'}</div>
         <div style="display:flex;align-items:center;justify-content:space-between">
           <span style="font-size:10px;color:rgba(255,255,255,.7)">${ph.by||''} · ${ph.size||''}</span>
-          <a class="pg-dl-btn" href="${ph.data}" download="${ph.name||'photo.jpg'}"><i class="ti ti-download" style="font-size:12px"></i> 下载</a>
+          <span style="display:flex;gap:4px">
+            <a class="pg-dl-btn" href="${ph.data}" download="${ph.name||'photo.jpg'}"><i class="ti ti-download" style="font-size:12px"></i> 下载</a>
+            <button class="pg-dl-btn pg-del-btn" onclick="delGalleryPhoto('${id}')"><i class="ti ti-trash" style="font-size:12px"></i> 删除</button>
+          </span>
         </div>
       </div>`;
     grid.appendChild(div);
   });
+}
+function delGalleryPhoto(id){
+  db.ref('photos/'+id).remove();
+  toast('照片已删除');
 }
 
 /* ═══════════════════════════════════════════
@@ -850,18 +1090,83 @@ function startDrag(e){
   const sx=e.clientX,sy=e.clientY,sl=parseInt(card.style.left)||0,st=parseInt(card.style.top)||0;
   card.style.zIndex=++ziMax;
   const pid=card.dataset.pid,cid=card.dataset.id;
+  window._dragging=true;
   function mm(ev){card.style.left=Math.max(0,sl+(ev.clientX-sx)/zoom)+'px';card.style.top=Math.max(0,st+(ev.clientY-sy)/zoom)+'px';syncRP(card);scheduleSave(pid,cid,250);}
-  function mu(){document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);saveCard(pid,cid);}
+  function mu(){window._dragging=false;document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);saveCard(pid,cid);}
   document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
 }
-function startResize(e){
+function startResizeC(e,corner){
   e.stopPropagation();e.preventDefault();
-  const card=e.currentTarget.closest('.card');
+  const card=e.currentTarget.closest('.card');selectCard(card);
   const sx=e.clientX,sy=e.clientY,sw=card.offsetWidth,sh2=card.offsetHeight;
+  const sl=parseInt(card.style.left)||0,st=parseInt(card.style.top)||0;
   const pid=card.dataset.pid,cid=card.dataset.id;
-  function mm(ev){card.style.width=Math.max(140,sw+(ev.clientX-sx)/zoom)+'px';card.style.minHeight=Math.max(50,sh2+(ev.clientY-sy)/zoom)+'px';syncRP(card);scheduleSave(pid,cid,250);}
-  function mu(){document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);saveCard(pid,cid);}
+  window._dragging=true;
+  function mm(ev){
+    const dx=(ev.clientX-sx)/zoom,dy=(ev.clientY-sy)/zoom;
+    let w=corner.includes('l')?sw-dx:sw+dx;
+    let h=corner.includes('t')?sh2-dy:sh2+dy;
+    if(w>=140){card.style.width=w+'px';if(corner.includes('l'))card.style.left=Math.max(0,sl+dx)+'px';}
+    if(h>=50){card.style.minHeight=h+'px';if(corner.includes('t'))card.style.top=Math.max(0,st+dy)+'px';}
+    syncRP(card);scheduleSave(pid,cid,250);
+  }
+  function mu(){window._dragging=false;document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);saveCard(pid,cid);}
   document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
+}
+
+/* ═══ timeline / games rows ═══ */
+function tlAddRow(btn){
+  const card=btn.closest('.card'),body=card.querySelector('.cbody');
+  const n=body.querySelectorAll('.tl-item').length+1;
+  const d=document.createElement('div');d.className='tl-item';
+  d.innerHTML=`<div class="tll"><div class="tldot"></div><div class="tlline"></div></div><div><div class="tlch" contenteditable="true">CHAPTER ${String(n).padStart(2,'0')}</div><div class="tln" contenteditable="true">新篇章</div><div class="tld" contenteditable="true">写下这一章的故事……</div></div>`;
+  body.appendChild(d);injectRowDels(card);
+  saveCard(card.dataset.pid,card.dataset.id);
+}
+function gAddRow(btn){
+  const card=btn.closest('.card'),body=card.querySelector('.cbody');
+  const n=body.querySelectorAll('.grow').length+1;
+  const d=document.createElement('div');d.className='grow';
+  d.innerHTML=`<div class="gnum">${String(n).padStart(2,'0')}</div><div class="ginfo"><p contenteditable="true">新游戏</p><span contenteditable="true">写下游戏玩法……</span></div><div class="gbadge" contenteditable="true">+3分</div>`;
+  body.appendChild(d);injectRowDels(card);
+  saveCard(card.dataset.pid,card.dataset.id);
+}
+function rowDel(btn){
+  const card=btn.closest('.card');
+  btn.closest('.tl-item,.grow,.bgm-row').remove();
+  saveCard(card.dataset.pid,card.dataset.id);
+}
+function bgmAddRow(btn){
+  const card=btn.closest('.card'),body=card.querySelector('.cbody');
+  const d=document.createElement('div');d.className='bgm-row';
+  d.innerHTML=`<i class="ti ti-music"></i><div class="bgm-name" contenteditable="true">点击输入歌曲名称…</div>`;
+  body.appendChild(d);injectRowDels(card);
+  saveCard(card.dataset.pid,card.dataset.id);
+}
+
+/* ═══ comments ═══ */
+function cmAdd(inp){
+  const v=inp.value.trim();if(!v)return;
+  const card=inp.closest('.card'),list=card.querySelector('.cm-list');if(!list)return;
+  const empty=list.querySelector('.cm-empty');if(empty)empty.remove();
+  const time=new Date().toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  const safe=v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const d=document.createElement('div');d.className='cm-item';
+  d.innerHTML=`<div class="cm-av" style="background:${myColor}22;color:${myColor}">${myName[0]}</div><div><div class="cm-meta">${myName} · ${time}</div><div class="cm-txt">${safe}</div></div>`;
+  list.appendChild(d);inp.value='';
+  saveCard(card.dataset.pid,card.dataset.id);
+}
+
+/* ═══ right panel collapse ═══ */
+function toggleRP(){
+  document.getElementById('rp').classList.toggle('collapsed');
+  document.getElementById('rp-collapse-btn').classList.toggle('collapsed');
+}
+function rpToggle(label){
+  const sec=label.nextElementSibling;if(!sec)return;
+  const closed=sec.style.display==='none';
+  sec.style.display=closed?'':'none';
+  const i=label.querySelector('i');if(i)i.className='ti '+(closed?'ti-chevron-down':'ti-chevron-right');
 }
 
 /* ═══════════════════════════════════════════
@@ -895,11 +1200,13 @@ function mkCard(type,x,y,pid){
   pid=pid||curPage;
   if(PAGES.find(p=>p.id===pid)?.isPhoto){toast('照片页请使用上方上传按钮');return;}
   const cid='c_'+Date.now();
-  const w={hero:420,part:360,photo:260,timeline:400,invite:265,games:360,text:280}[type]||280;
+  const w={hero:420,part:360,photo:260,timeline:400,invite:265,games:360,text:280,comments:300,bgm:280}[type]||280;
   const cd={type,x:Math.round(x),y:Math.round(y),w,h:60,zi:++ziMax,tag:typeLabel(type),body:defaultBody(type,pid),by:myName,t:Date.now()};
   const canvas=document.querySelector(`.page-canvas[data-page="${pid}"]`);if(!canvas)return;
   const el=buildCard(cid,cd,pid);canvas.appendChild(el);
   const key=pid+'_'+cid;localCards[key]=el;
+  undoStack.push({pid,cid,prev:null,next:cd,at:Date.now()});redoStack.length=0;
+  lastData[key]=cd;
   ignoreRemote=true;db.ref('cards/'+pid+'/'+cid).set(cd).then(()=>{ignoreRemote=false;});
   selectCard(el);
 }
@@ -912,15 +1219,18 @@ function dupCard(btn){
   db.ref('cards/'+pid+'/'+cid).once('value',snap=>{
     const d=snap.val();if(!d)return;
     const id2='c_'+Date.now();d.x+=20;d.y+=20;d.zi=++ziMax;d.by=myName;d.t=Date.now();
+    undoStack.push({pid,cid:id2,prev:null,next:d,at:Date.now()});redoStack.length=0;
     db.ref('cards/'+pid+'/'+id2).set(d);
   });
 }
 function rmCard(btn){
   const card=btn.closest('.card'),pid=card.dataset.pid,cid=card.dataset.id;
   if(selCard===card)selCard=null;
-  card.remove();delete localCards[pid+'_'+cid];
+  const key=pid+'_'+cid;
+  if(lastData[key]){undoStack.push({pid,cid,prev:lastData[key],next:null,at:Date.now()});redoStack.length=0;}
+  card.remove();delete localCards[key];delete lastData[key];
   db.ref('cards/'+pid+'/'+cid).remove();
-  toast('已删除模块');
+  toast('已删除模块（可点撤销找回）');
 }
 function delSel(){if(selCard)selCard.querySelector('.del')?.click();}
 function dupSel(){if(selCard)selCard.querySelector('.ctool:not(.del)')?.click();}
@@ -1012,15 +1322,15 @@ function doExportHTML(){
 <html lang="zh-CN"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>因为遇见你 · ${p?p.label:''}</title>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--gold:${getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()||'#f57f2a'};--gold-l:rgba(245,127,42,.4);--gold-p:rgba(245,127,42,.12);--t1:#1e3050;--t2:#4f6480;--t3:#8ca0b8;--bg1:#fff;--bg2:#f0f8ff;--bg3:#d6ecff;--bdr:rgba(59,130,214,.18);--bdrm:rgba(59,130,214,.35);--r-sm:10px;--r-md:14px;--r-lg:22px;--sh:0 3px 14px rgba(30,80,160,.1);--ff-d:'ZCOOL KuaiLe','Noto Sans SC',cursive;--ff-b:'ZCOOL QingKe HuangYou','Noto Sans SC','PingFang SC',sans-serif}
+:root{--gold:${getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()||'#f57f2a'};--gold-l:rgba(245,127,42,.4);--gold-p:rgba(245,127,42,.12);--t1:#1e3050;--t2:#4f6480;--t3:#8ca0b8;--bg1:#fff;--bg2:#f0f8ff;--bg3:#d6ecff;--bdr:rgba(59,130,214,.18);--bdrm:rgba(59,130,214,.35);--r-sm:10px;--r-md:14px;--r-lg:22px;--sh:0 3px 14px rgba(30,80,160,.1);--ff-d:'ZCOOL KuaiLe','KaiTi','STKaiti',cursive;--ff-b:'KaiTi','STKaiti','Noto Serif SC','PingFang SC',serif}
 body{font-family:var(--ff-b);background:var(--bg3);padding:32px;color:var(--t1)}
 .page-wrap{position:relative;width:1200px;min-height:860px;margin:0 auto;background:var(--bg1);border-radius:16px;padding:20px}
 .card{position:absolute;background:var(--bg1);border-radius:16px;border:.5px solid var(--bdrm);box-shadow:0 2px 12px rgba(90,60,20,.08)}
 .chdr{display:none}.rh{display:none}.sh{display:none}
-.cbody{padding:13px}.pa{width:100%;min-height:150px;background:var(--bg2);border-radius:0 0 16px 16px;overflow:hidden;position:relative}.pa img{width:100%;height:100%;object-fit:cover;display:block}
+.cbody{padding:20px 22px}.cbody .cbody{padding:0}.pa{width:100%;min-height:150px;background:var(--bg2);border-radius:0 0 16px 16px;overflow:hidden;position:relative}.pa img{width:100%;height:100%;object-fit:cover;display:block}
 .hero-t{font-family:var(--ff-d);font-size:28px;font-weight:300;line-height:1.25;letter-spacing:.04em}
 .gline{width:30px;height:1.5px;background:var(--gold);border-radius:1px;margin:10px 0}
 .hero-s{font-size:13px;color:var(--t2);line-height:1.8}.hero-d{font-size:11px;color:var(--gold);letter-spacing:.1em;margin-top:9px;font-family:var(--ff-d)}
@@ -1029,7 +1339,8 @@ body{font-family:var(--ff-b);background:var(--bg3);padding:32px;color:var(--t1)}
 .inv-body{text-align:center;padding:16px 14px}.inv-en{font-size:9px;letter-spacing:.2em;color:var(--t3);margin-bottom:4px}.inv-t{font-family:var(--ff-d);font-size:22px;font-weight:300;letter-spacing:.08em}.inv-hr{width:40px;height:.5px;background:var(--gold);margin:10px auto}.inv-info{font-size:12px;color:var(--t2);line-height:2.2}.inv-qr{width:60px;height:60px;margin:11px auto 0;background:var(--bg2);border-radius:10px;border:.5px solid var(--bdrm);display:flex;align-items:center;justify-content:center}
 .grow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--bdr)}.grow:last-child{border-bottom:none}.gnum{font-family:var(--ff-d);font-size:17px;font-weight:300;color:var(--gold);width:24px;flex-shrink:0}.ginfo p{font-size:12px;font-weight:500}.ginfo span{font-size:10px;color:var(--t3);display:block;margin-top:1px}.gbadge{margin-left:auto;font-size:10px;color:var(--gold);background:var(--gold-p);border-radius:20px;padding:2px 8px;font-weight:500}
 .txt-b{font-size:13px;color:var(--t2);line-height:1.8}
-.rcursor{display:none}.page-header-strip{display:none}
+.rcursor{display:none}.page-header-strip{display:none}.addbar,.cm-bar,.rdel{display:none}
+.cm-list{display:flex;flex-direction:column;gap:9px}.cm-empty{font-size:11px;color:var(--t3);text-align:center}.cm-item{display:flex;gap:8px}.cm-av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0}.cm-meta{font-size:9px;color:var(--t3);margin-bottom:2px}.cm-txt{font-size:12px;line-height:1.6;word-break:break-word}
 </style></head><body>
 <div style="text-align:center;margin-bottom:20px;font-family:var(--ff-d);font-size:18px;color:var(--t1)">${p?p.label:''} · 因为遇见你</div>
 <div class="page-wrap">${cardsHTML}</div>
@@ -1052,6 +1363,8 @@ function setupKeyboard(){
     if(e.target.isContentEditable||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
     if((e.key==='Delete'||e.key==='Backspace')&&selCard)delSel();
     if((e.ctrlKey||e.metaKey)&&e.key==='d'){e.preventDefault();dupSel();}
+    if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}
+    if((e.ctrlKey||e.metaKey)&&(e.key.toLowerCase()==='y'||(e.shiftKey&&e.key.toLowerCase()==='z'))){e.preventDefault();redo();}
     if(e.key==='Escape')selectCard(null);
   });
 }
