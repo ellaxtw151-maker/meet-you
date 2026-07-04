@@ -456,17 +456,22 @@ function initFB(){
   localStorage.setItem('my_color',myColor);
   connectFB(cfg);
 }
+let connTimer;
 function connectFB(cfg){
+  clearTimeout(connTimer);
+  document.getElementById('serr').style.display='none';
   try{if(!firebase.apps.length)firebase.initializeApp(cfg);db=firebase.database();}
   catch(e){showErr('Firebase 初始化失败：'+e.message);return;}
   db.ref('.info/connected').on('value',snap=>{
     if(snap.val()){
+      clearTimeout(connTimer);
+      document.getElementById('serr').style.display='none';
       document.getElementById('setup').style.display='none';
       document.getElementById('app').classList.add('ready');
-      startApp();
+      if(!window._appStarted){window._appStarted=true;startApp();}
     }
   });
-  setTimeout(()=>{if(!document.getElementById('app').classList.contains('ready'))showErr('连接超时，请检查 databaseURL 和数据库规则（需 test mode）');},8000);
+  connTimer=setTimeout(()=>{if(!document.getElementById('app').classList.contains('ready'))showErr('连接超时，请检查 databaseURL 和数据库规则（需 test mode）');},8000);
 }
 function showErr(m){const e=document.getElementById('serr');e.textContent=m;e.style.display='block';}
 
