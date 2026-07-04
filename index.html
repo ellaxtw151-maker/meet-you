@@ -7,18 +7,18 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --gold:#b98c5e;--gold-l:rgba(185,140,94,.4);--gold-p:rgba(185,140,94,.1);
-  --t1:#1a1612;--t2:#6b5f52;--t3:#a8998a;
-  --bg1:#fff;--bg2:#faf8f5;--bg3:#f2ede7;
-  --bdr:rgba(185,140,94,.15);--bdrm:rgba(185,140,94,.28);
-  --r-sm:6px;--r-md:10px;--r-lg:16px;
-  --sh:0 2px 12px rgba(90,60,20,.08),0 0 0 .5px rgba(185,140,94,.12);
-  --shf:0 8px 28px rgba(90,60,20,.14),0 0 0 .5px rgba(185,140,94,.2);
-  --ff-d:'Noto Serif SC',serif;--ff-b:'Noto Sans SC','PingFang SC',sans-serif;
+  --gold:#f57f2a;--gold-l:rgba(245,127,42,.4);--gold-p:rgba(245,127,42,.12);
+  --t1:#1e3050;--t2:#4f6480;--t3:#8ca0b8;
+  --bg1:#fff;--bg2:#f0f8ff;--bg3:#d6ecff;
+  --bdr:rgba(59,130,214,.18);--bdrm:rgba(59,130,214,.35);
+  --r-sm:10px;--r-md:14px;--r-lg:22px;
+  --sh:0 3px 14px rgba(30,80,160,.1),0 0 0 1px rgba(59,130,214,.12);
+  --shf:0 10px 30px rgba(30,80,160,.18),0 0 0 1px rgba(59,130,214,.22);
+  --ff-d:'ZCOOL KuaiLe','Noto Sans SC',cursive;--ff-b:'ZCOOL QingKe HuangYou','Noto Sans SC','PingFang SC',sans-serif;
 }
 html,body{font-family:var(--ff-b);height:100vh;overflow:hidden;color:var(--t1);background:var(--bg2)}
 button{cursor:pointer;font-family:var(--ff-b)}
@@ -101,7 +101,7 @@ button{cursor:pointer;font-family:var(--ff-b)}
 .ponline{color:#4caf50;font-size:9px}
 
 /* ════ CANVAS ════ */
-#cwrap{flex:1;overflow:auto;background:var(--bg3);background-image:radial-gradient(circle,rgba(185,140,94,.07) 1px,transparent 1px);background-size:22px 22px;position:relative}
+#cwrap{flex:1;overflow:auto;background:var(--bg3);background-image:radial-gradient(circle at 30% 30%,rgba(245,127,42,.14) 3px,transparent 3px),radial-gradient(circle at 70% 70%,rgba(59,130,214,.12) 2px,transparent 2px);background-size:44px 44px;position:relative}
 #cwrap::-webkit-scrollbar{width:5px;height:5px}
 #cwrap::-webkit-scrollbar-thumb{background:var(--bdrm);border-radius:3px}
 .page-canvas{position:relative;width:1200px;min-height:860px;margin:24px;transform-origin:0 0;display:none}
@@ -252,7 +252,7 @@ body.preview .page-header-strip{display:none}
 <!-- ════ SETUP ════ -->
 <div id="setup">
 <div class="sbox">
-  <div class="slogo">因为遇见你 <span>· 协作策划站</span></div>
+  <div class="slogo">🦊 因为遇见你 🐰 <span>· 协作策划站</span></div>
   <div class="ssub">连接 Firebase Realtime Database，把 HTML 发给朋友粘贴同一份配置，即可实时协作，照片可互相上传下载。</div>
   <div class="sfree"><i class="ti ti-check" style="font-size:12px"></i> 完全免费 · 无需 Storage</div>
   <div class="sstep"><div class="snum">1</div><div><div class="stitle">新建 Firebase 项目</div><div class="sdesc">前往 <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Create a project（关闭 Analytics）</div></div></div>
@@ -274,7 +274,7 @@ body.preview .page-header-strip{display:none}
 
 <!-- TOPBAR -->
 <div id="topbar">
-  <div class="logo"><div class="logo-dot"></div>因为遇见你<span class="logo-sub">协作策划站</span></div>
+  <div class="logo"><span style="font-size:16px">🐾</span>因为遇见你<span class="logo-sub">🦊 协作策划站 🐰</span></div>
   <div class="sst"><div class="ssdot" id="ssdot"></div><span id="sstxt">已同步</span></div>
   <div style="display:flex;align-items:center;gap:8px">
     <div class="cstack" id="cstack"></div>
@@ -314,11 +314,11 @@ body.preview .page-header-strip{display:none}
   <div>
     <div class="rplabel">主题色</div>
     <div style="display:flex;gap:5px;flex-wrap:wrap">
-      <div class="csw active" style="background:#b98c5e" data-c="#b98c5e" onclick="setTheme(this)"></div>
-      <div class="csw" style="background:#7a9e8a" data-c="#7a9e8a" onclick="setTheme(this)"></div>
-      <div class="csw" style="background:#9e7a9e" data-c="#9e7a9e" onclick="setTheme(this)"></div>
-      <div class="csw" style="background:#9e857a" data-c="#9e857a" onclick="setTheme(this)"></div>
-      <div class="csw" style="background:#7a8f9e" data-c="#7a8f9e" onclick="setTheme(this)"></div>
+      <div class="csw active" style="background:#f57f2a" data-c="#f57f2a" onclick="setTheme(this)"></div>
+      <div class="csw" style="background:#3b82d6" data-c="#3b82d6" onclick="setTheme(this)"></div>
+      <div class="csw" style="background:#43a86f" data-c="#43a86f" onclick="setTheme(this)"></div>
+      <div class="csw" style="background:#9b6bd6" data-c="#9b6bd6" onclick="setTheme(this)"></div>
+      <div class="csw" style="background:#f5b52a" data-c="#f5b52a" onclick="setTheme(this)"></div>
     </div>
   </div>
   <div class="rpdiv"></div>
@@ -1012,10 +1012,10 @@ function doExportHTML(){
 <html lang="zh-CN"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>因为遇见你 · ${p?p.label:''}</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--gold:${getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()||'#b98c5e'};--gold-l:rgba(185,140,94,.4);--gold-p:rgba(185,140,94,.1);--t1:#1a1612;--t2:#6b5f52;--t3:#a8998a;--bg1:#fff;--bg2:#faf8f5;--bg3:#f2ede7;--bdr:rgba(185,140,94,.15);--bdrm:rgba(185,140,94,.28);--r-sm:6px;--r-md:10px;--r-lg:16px;--sh:0 2px 12px rgba(90,60,20,.08);--ff-d:'Noto Serif SC',serif;--ff-b:'Noto Sans SC','PingFang SC',sans-serif}
+:root{--gold:${getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()||'#f57f2a'};--gold-l:rgba(245,127,42,.4);--gold-p:rgba(245,127,42,.12);--t1:#1e3050;--t2:#4f6480;--t3:#8ca0b8;--bg1:#fff;--bg2:#f0f8ff;--bg3:#d6ecff;--bdr:rgba(59,130,214,.18);--bdrm:rgba(59,130,214,.35);--r-sm:10px;--r-md:14px;--r-lg:22px;--sh:0 3px 14px rgba(30,80,160,.1);--ff-d:'ZCOOL KuaiLe','Noto Sans SC',cursive;--ff-b:'ZCOOL QingKe HuangYou','Noto Sans SC','PingFang SC',sans-serif}
 body{font-family:var(--ff-b);background:var(--bg3);padding:32px;color:var(--t1)}
 .page-wrap{position:relative;width:1200px;min-height:860px;margin:0 auto;background:var(--bg1);border-radius:16px;padding:20px}
 .card{position:absolute;background:var(--bg1);border-radius:16px;border:.5px solid var(--bdrm);box-shadow:0 2px 12px rgba(90,60,20,.08)}
